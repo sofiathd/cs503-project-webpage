@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Improving Temporal Understanding in Long-Form Activity Videos via Structure-Guided VLM Reasoning.">
+  <meta name="keywords" content="video understanding, temporal action detection, VLM, TSU, ActionFormer">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Structure-Guided VLM Reasoning for Long-Form Activity Videos</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    .publication-title { font-family: 'Google Sans', sans-serif; }
+    html { scroll-behavior: smooth; }
+
+    /* Section alternating background */
+    section.section.is-alt { background: #fafafa; }
+
+    /* Overview nav tiles */
+    .overview-tiles .tile.is-child.box {
+      transition: background .15s;
+      cursor: pointer;
+      text-align: center;
+    }
+    .overview-tiles .tile.is-child.box:hover { background: #e8e8e8; }
+
+    /* Stats row */
+    .stat-box { text-align: center; padding: 20px 10px; }
+    .stat-val  { font-family: 'Google Sans', sans-serif; font-size: 36px; font-weight: 700; color: #3273dc; display: block; }
+    .stat-lbl  { font-size: 13px; color: #777; }
+
+    /* Pipeline SVG */
+    .pipeline-svg-wrap { overflow-x: auto; }
+    .pipeline-svg-wrap svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+
+    /* JSON code block */
+    pre.json-block {
+      background: #f6f8fa;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 18px 20px;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    /* Qualitative annotation */
+    .vlm-output {
+      background: #f9f9f9;
+      border-left: 4px solid #3273dc;
+      padding: 18px 22px;
+      border-radius: 0 6px 6px 0;
+      font-size: 15px;
+      line-height: 1.85;
+    }
+    .check  { color: #257942; font-weight: 600; }
+    .approx { color: #b45309; font-weight: 600; }
+    .wrong  { color: #cc0f35; font-weight: 600; }
+
+    /* Gantt */
+    .gantt-row   { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .gantt-label { width: 155px; flex-shrink: 0; font-size: 12px; color: #555; text-align: right; font-family: monospace; }
+    .gantt-track { flex: 1; height: 22px; background: #ebebeb; border-radius: 4px; position: relative; overflow: hidden; }
+    .gantt-seg   { position: absolute; height: 100%; border-radius: 3px; }
+    .gt-bar      { background: rgba(50,115,220,.65); }
+    .pred-bar    { background: rgba(255,56,96,.8); }
+
+    /* Table helpers */
+    td.best    { color: #257942; font-weight: 700; }
+    td.pending { color: #aaa; font-style: italic; }
+
+    /* Contribution cards */
+    .contrib-box { border-top: 3px solid #3273dc; }
+
+    /* Footer */
+    footer.footer { background: #f5f5f5; padding: 3rem 1.5rem; }
+
+    /* Research question callout */
+    .callout {
+      background: #eef3fb;
+      border-left: 4px solid #3273dc;
+      padding: 16px 20px;
+      border-radius: 0 6px 6px 0;
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════════ -->
+<section class="hero is-light">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <h1 class="title is-1 publication-title">
+            Improving Temporal Understanding in Long-Form Activity Videos
+            via Structure-Guided VLM Reasoning
+          </h1>
+
+          <div class="is-size-5 publication-authors" style="margin-top:1rem;">
+            <span class="author-block"><a href="https://people.epfl.ch/">Rim El Qabli</a>,&nbsp;</span>
+            <span class="author-block"><a href="https://people.epfl.ch/">Gauthier Nielly</a>,&nbsp;</span>
+            <span class="author-block"><a href="https://people.epfl.ch/">Lina Sadgal</a>,&nbsp;</span>
+            <span class="author-block"><a href="https://people.epfl.ch/">Sofia Taouhid</a></span>
+          </div>
+
+          <div class="is-size-6" style="margin-top:.5rem; color:#777;">
+            EPFL - CS-503 Visual Intelligence: Machines and Minds
+          </div>
+
+          <div class="column has-text-centered" style="margin-top:1.5rem;">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Report</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/gauthiernielly/Visual-Intelligence-Project/tree/hybrid" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fab fa-github"></i></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#"" class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-database"></i></span>
+                  <span>TSU Dataset</span>
+                </a>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     ABSTRACT + STATS + OVERVIEW NAV
+═══════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Video Large Language Models (Video LLMs) increasingly serve as unified architectures
+            for video understanding, yet recent studies show they fail at temporal reasoning even
+            on tasks specifically designed to measure it. Critically, this failure stems from
+            temporal <em>localization</em>, not semantic understanding: VLMs recognize actions
+            but cannot determine <em>when</em> they occur.
+          </p>
+          <p>
+            We propose a hybrid pipeline using temporal action detection (TAD) proposals as
+            structural baseline to guide VLM reasoning on long untrimmed activity videos.
+            ActionFormer within OpenTAD generates candidate segments, passed to a Video LLM
+            (Qwen3-VL) for semantic labeling and composite activity inference.
+          </p>
+          <p>
+            We evaluate on Toyota Smarthome Untrimmed (TSU) dataset, where all prior work is TAD-only
+            and no VLM evaluation exists, making ours the <strong>first VLM baseline on TSU</strong>.
+            Our results reveal that VLMs correctly identify activity threads but hallucinate
+            temporal structure, motivating the hybrid approach. 
+            We make the performance better than the pure VLM baseline, confirming that temporal 
+            scaffolding can improve VLM reasoning on long-form videos. Our structured analysis 
+            framework produces informative results regardless of outcome, concretely directing 
+            future work toward architectural improvements or better temporal proposals.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="columns is-centered" style="margin-top:.5rem;">
+      <div class="column is-2 stat-box">
+        <span class="stat-val">536</span>
+        <span class="stat-lbl">TSU videos<br>(avg. 21 min each)</span>
+      </div>
+      <div class="column is-2 stat-box">
+        <span class="stat-val">51</span>
+        <span class="stat-lbl">Activity classes<br>in TSU</span>
+      </div>
+      <div class="column is-2 stat-box">
+        <span class="stat-val">8B</span>
+        <span class="stat-lbl">VLM parameters<br>Qwen3-VL</span>
+      </div>
+      <div class="column is-2 stat-box">
+        <span class="stat-val">1st</span>
+        <span class="stat-lbl">VLM Baseline on TSU</span>
+      </div>
+    </div>
+
+    <!-- Overview nav -->
+    <div class="columns is-centered has-text-centered" style="margin-top:2rem;">
+      <div class="column is-full-width">
+        <h2 class="title is-4">Overview</h2>
+        <div class="tile is-ancestor overview-tiles">
+          <div class="tile is-parent"><a href="#intro"       class="tile is-child box"><p class="subtitle"><font size="-1">Introduction</font></p></a></div>
+          <div class="tile is-parent"><a href="#related"     class="tile is-child box"><p class="subtitle"><font size="-1">Related Work</font></p></a></div>
+          <div class="tile is-parent"><a href="#method"      class="tile is-child box"><p class="subtitle"><font size="-1">Method</font></p></a></div>
+          <div class="tile is-parent"><a href="#experiments" class="tile is-child box"><p class="subtitle"><font size="-1">Experiments</font></p></a></div>
+          <div class="tile is-parent"><a href="#conclusion"  class="tile is-child box"><p class="subtitle"><font size="-1">Conclusion</font></p></a></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     I. INTRODUCTION
+═══════════════════════════════════════════════════ -->
+<section class="section is-alt" id="intro">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">I. Introduction</h2>
+        <div class="content has-text-justified">
+
+          <p>
+            Many real-world video applications share a common structure: a stationary camera records
+            a long, continuous stream in which multiple actions compose into higher-level activities.
+            Surveillance systems, industrial monitors, and smart-home cameras all require recovering
+            full event timelines, not classifying single short clips.
+          </p>
+
+          <p>
+            Video LLMs are increasingly adopted as unified architectures for such tasks. However,
+            TVBench demonstrated that most Video LLMs perform near random on temporal ordering and
+            counting tasks, with shuffled input frames barely degrading performance — revealing
+            reliance on static visual cues rather than genuine temporal reasoning. TemporalBench
+            corroborated this: GPT-4o achieves only 38.5% accuracy versus 67.9% for humans, with
+            performance declining further on longer videos.
+          </p>
+
+          <p>
+            Recent analyses identify a clear bottleneck: temporal <em>localization</em>, not semantic
+            understanding. Wang et al. show that models like Qwen2-VL delegate temporal modeling
+            entirely to the language backbone via spatial-only attention, which proves insufficient
+            for fine-grained temporal dynamics. The MERIT framework further shows that correct visual
+            cue identification is insufficient without temporal-causal inference.
+          </p>
+
+          <div class="callout">
+            <strong>Research Question:</strong>&nbsp;
+            <em>Can explicit temporal structure from action detection improve VLM reasoning on
+            long-form activity videos, and which aspects of timeline understanding benefit most
+            from this combination?</em>
+          </div>
+
+          <p>
+            Pure VLMs fail at temporal localization; pure TAD lacks semantic flexibility.
+            No prior study has tested whether combining them resolves each other's weaknesses on
+            long-form daily activity videos with dense hierarchical annotations. Our key contributions:
+          </p>
+          <ul>
+            <li>The <strong>first VLM evaluation on TSU</strong>, establishing a baseline where none exists.</li>
+            <li>A direct test of whether external temporal scaffolding at inference time can substitute
+                for architectural changes to VLMs.</li>
+            <li>A structured analysis framework producing informative results regardless of outcome —
+                each failure mode redirects future work concretely.</li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     II. RELATED WORK
+═══════════════════════════════════════════════════ -->
+<section class="section" id="related">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">II. Related Work</h2>
+        <div class="content has-text-justified">
+
+          <h3 class="title is-5">Temporal Reasoning Failures in Video LLMs</h3>
+          <p>
+            TVBench demonstrated near-chance performance on temporal ordering and counting tasks,
+            with shuffled frames barely affecting accuracy. TemporalBench confirmed this on
+            fine-grained probes: GPT-4o reaches only 38.5% vs. 67.9% for humans. Wang et al.
+            traced failures to spatial-only attention in vision encoders; MERIT showed that correct
+            visual cue identification is insufficient without temporal-causal inference.
+          </p>
+
+          <h3 class="title is-5">Segment-Then-Reason Approaches</h3>
+          <p>
+            T* iteratively selects key frames before reasoning about them. MR. Video applies a
+            MapReduce paradigm across video segments, achieving state-of-the-art on long-video
+            benchmarks. Structure-guided prompting improved temporal QA accuracy by up to 17.7%
+            in autonomous driving scenarios. Our work tests whether this principle transfers to
+            long-form daily activity videos with dense hierarchical annotations.
+          </p>
+
+          <h3 class="title is-5">Temporal Action Detection on TSU</h3>
+          <p>
+            Prior TAD-only work on TSU includes PDAN (~32.7% frame-mAP) and the current
+            state-of-the-art MS-Temba (2025), which reports CLIP features outperforming I3D on
+            this benchmark. Crucially, <em>no VLM has been evaluated on TSU</em>, making our
+            work the first to establish such a baseline.
+          </p>
+
+          <h3 class="title is-5">Complementary Directions</h3>
+          <p>
+            Other work improves VLM temporal reasoning at the architecture or training level.
+            Our approach is orthogonal: we provide external temporal structure at inference time
+            without modifying model weights, a lightweight alternative applicable to any frozen VLM.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     III. METHOD
+═══════════════════════════════════════════════════ -->
+<section class="section is-alt" id="method">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">III. Method</h2>
+        <div class="content has-text-justified">
+
+          <h3 class="title is-5">Pipeline Overview</h3>
+          <p>
+            Our system operates in three stages: 
+          </p>
+          <ol>
+            <li>ActionFormer produces ranked candidate segments after NMS and confidence thresholding,</li>
+            <li>For each proposal the VLM is queried with a structured prompt grounding it to a specific time interval and label set,</li>
+            <li>Segment labels are merged chronologically with per-class NMS to preserve TSU's co-occurring activities.</li>
+          </ol>
+
+          <div class="columns is-centered">
+            <div class="column is-three-quarters">
+              <div class="box">
+                <div class="pipeline-svg-wrap">
+                  <svg viewBox="0 0 760 295" xmlns="http://www.w3.org/2000/svg" width="760" height="295">
+                    <defs>
+                      <marker id="arr-b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#3273dc"/></marker>
+                      <marker id="arr-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#257942"/></marker>
+                      <marker id="arr-a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#aaa"/></marker>
+                    </defs>
+
+                    <!-- Long Video -->
+                    <rect x="255" y="14" width="250" height="44" rx="6" fill="#dbedff" stroke="#3273dc" stroke-width="1.5"/>
+                    <text x="380" y="33" text-anchor="middle" font-family="Google Sans,sans-serif" font-size="13" font-weight="600" fill="#1a4fa0">Long Video (TSU)</text>
+                    <text x="380" y="50" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">avg. ~21 min · 51 classes · 25 fps</text>
+
+                    <!-- Branch left (TAD) -->
+                    <line x1="320" y1="58" x2="185" y2="102" stroke="#3273dc" stroke-width="1.5" marker-end="url(#arr-b)"/>
+                    <!-- Branch right (Baseline 2) dashed -->
+                    <line x1="440" y1="58" x2="585" y2="102" stroke="#bbb" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-a)"/>
+
+                    <!-- ActionFormer -->
+                    <rect x="60" y="102" width="250" height="44" rx="6" fill="#dbedff" stroke="#3273dc" stroke-width="1.5"/>
+                    <text x="185" y="121" text-anchor="middle" font-family="Google Sans,sans-serif" font-size="13" font-weight="600" fill="#1a4fa0">ActionFormer (TAD)</text>
+                    <text x="185" y="137" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">CLIP ViT-B/32 · OpenTAD</text>
+
+                    <!-- Baseline 2 (dashed) -->
+                    <rect x="470" y="102" width="220" height="44" rx="6" fill="#fff3e0" stroke="#e67e22" stroke-width="1.5" stroke-dasharray="5,3"/>
+                    <text x="580" y="121" text-anchor="middle" font-family="Google Sans,sans-serif" font-size="12" font-weight="600" fill="#974a00">Baseline 2: Pure VLM</text>
+                    <text x="580" y="137" text-anchor="middle" font-family="monospace" font-size="10" fill="#888">full video · no anchors</text>
+
+                    <!-- TAD → Proposals -->
+                    <line x1="185" y1="146" x2="185" y2="182" stroke="#3273dc" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+                    <!-- Temporal Proposals -->
+                    <rect x="60" y="182" width="250" height="40" rx="6" fill="#dbedff" stroke="#3273dc" stroke-width="1"/>
+                    <text x="185" y="199" text-anchor="middle" font-family="Google Sans,sans-serif" font-size="13" font-weight="600" fill="#1a4fa0">Temporal Proposals</text>
+                    <text x="185" y="214" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">NMS · confidence threshold</text>
+
+                    <!-- Proposals → Segment Extraction -->
+                    <line x1="310" y1="202" x2="365" y2="202" stroke="#3273dc" stroke-width="1.5" marker-end="url(#arr-b)"/>
+
+                    <!-- Segment Extraction -->
+                    <rect x="365" y="182" width="130" height="40" rx="6" fill="#e6f4ea" stroke="#257942" stroke-width="1.5"/>
+                    <text x="430" y="199" text-anchor="middle" font-family="Google Sans,sans-serif" font-size="12" font-weight="600" fill="#1a5c32">Segment Extract</text>
+                    <text x="430" y="214" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">crop video clips</text>
+
+                    <!-- Segment → VLM Labeling -->
+                    <line x1="495" y1="202" x2="542" y2="202" stroke="#257942" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+                    <!-- VLM Labeling -->
+                    <rect x="542" y="182" width="155" height="40" rx="6" fill="#e6f4ea" stroke="#257942" stroke-width="1.5"/>
+                    <text x="619" y="199" text-anchor="middle" font-family="Google Sans,sans-serif" font-size="12" font-weight="600" fill="#1a5c32">VLM Labeling</text>
+                    <text x="619" y="214" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">JSON · fuzzy match</text>
+
+                    <!-- Proposals + VLM → Timeline Assembly -->
+                    <line x1="185" y1="222" x2="300" y2="258" stroke="#3273dc" stroke-width="1.5" marker-end="url(#arr-b)"/>
+                    <line x1="619" y1="222" x2="510" y2="258" stroke="#257942" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+                    <!-- Timeline Assembly -->
+                    <rect x="300" y="248" width="210" height="40" rx="6" fill="#dbedff" stroke="#3273dc" stroke-width="1.5"/>
+                    <text x="405" y="265" text-anchor="middle" font-family="Google Sans,sans-serif" font-size="13" font-weight="600" fill="#1a4fa0">Timeline Assembly</text>
+                    <text x="405" y="281" text-anchor="middle" font-family="monospace" font-size="10" fill="#555">merge · per-class NMS</text>
+
+                    <!-- Labels -->
+                    <text x="58" y="100" font-family="monospace" font-size="9" fill="#3273dc" text-anchor="end">Baseline 1</text>
+                    <text x="694" y="175" font-family="monospace" font-size="9" fill="#257942">Hybrid</text>
+                    <text x="694" y="100" font-family="monospace" font-size="9" fill="#e67e22">Baseline 2</text>                  </svg>
+                </div>
+                <p class="has-text-centered" style="font-size:13px;color:#777;margin-top:8px;">
+                  <strong>Figure 1.</strong> Hybrid pipeline overview. ActionFormer (blue) generates temporal proposals;
+                  a VLM labels each proposed segment (green); outputs merge into a final timeline.
+                  The orange dashed branch is the pure-VLM baseline.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="title is-5">Dataset: Toyota Smarthome Untrimmed (TSU)</h3>
+          <p>
+            TSU provides 536 long untrimmed daily-activity videos (avgerage duration of 21 min) from fixed cameras
+            in a real apartment, with dense annotations for 51 activity classes at 25 fps. We use
+            the Cross-Subject (CS) protocol (subject-disjoint with no train/test overlap). We produce
+            a derived ActivityNet-style annotation JSON with timestamps in seconds for compatibility
+            with OpenTAD.
+          </p>
+
+          <h3 class="title is-5">Baseline 1: ActionFormer (TAD)</h3>
+          <p>
+            We train ActionFormer within OpenTAD on the TSU CS split. Feature extraction uses CLIP
+            ViT-B/32 at stride 16. We sample one frame every 0.64 s and pass each frame through CLIP's 
+            image encoder to get a 512-dimensional vector.
+            Since TSU is not among OpenTAD's nine natively supported datasets, we wrote a TSU-specific
+            config reusing OpenTAD's <code>ThumosPaddingDataset</code> class, the same approach used
+            by Multi-THUMOS.
+          </p>
+
+          <h3 class="title is-5">Baseline 2: Pure Video LLM</h3>
+          <p>
+            We evaluate Qwen3-VL-8B on TSU videos at N=32 uniformly sampled
+            frames (2× NVIDIA V100, 64 GB VRAM). Models are queried with structured prompts
+            requesting JSON timelines with labels constrained to the 51-class TSU ontology.
+          </p>
+
+          <h3 class="title is-5">Hybrid Pipeline Design Decisions</h3>
+          <p>TAD output → segment extraction → VLM labeling → timeline assembly </p>
+          <p>
+            Our hybrid pipeline corresponds to a merge of our two baselines.
+            Given a video, it is passed through ActionFormer to generate temporal proposals, 
+            which are filtered by NMS and confidence thresholding. Each proposal is then cropped 
+            into a segment and passed to the VLM with a structured prompt grounding it to that 
+            specific time interval and label set. Finally, outputs are merged chronologically with 
+            per-class NMS. 
+            Key design choices include per-class NMS to preserve TSU's co-occurring activities
+            (multiple actions can happen simultaneously in domestic settings), ablation over
+            confidence thresholds, and structured JSON prompting with fuzzy label matching to
+            handle VLM outputs. 
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     IV. EXPERIMENTS
+═══════════════════════════════════════════════════ -->
+<section class="section" id="experiments">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">IV. Experiments</h2>
+        <div class="content has-text-justified">
+
+          
+          <!-- Evaluation protocol -->
+          <h3 class="title is-5">Evaluation Protocol — LCS Recall</h3>
+          <p>
+            Because all three systems (TAD, VLM, Hybrid) ultimately produce an <em>ordered sequence of
+            action labels</em> per video, we evaluate them with a unified, model-agnostic metric:
+            <strong>Longest Common Subsequence (LCS) Recall</strong>. For each video, ground-truth
+            events from the TSU annotationsare are sorted by <code>start_frame</code>, predicted segments are
+            sorted by start time and consecutive duplicates are collapsed. The score is the length
+            of the LCS between the two sequences divided by the Ground Truth (GT) length, in percent:
+          </p>
+          <p style="text-align:center;">
+            $\text{LCS Recall} = \dfrac{|\text{LCS}(\text{GT}, \text{Pred})|}{|\text{GT}|} \times 100$
+          </p>
+          <p>
+            All labels are normalized before comparison. The metric rewards recall and correct ordering, 
+            is insensitive to extra (hallucinated) predictions, and applies identically to TAD output, VLM output,
+            and the hybrid pipeline, making the three directly comparable.
+          </p>
+
+          <!-- Results table -->
+          <h3 class="title is-5">Quantitative Results (TSU Cross-Subject Split)</h3>
+          <p>
+            Each row reports the same LCS Recall metric, so VLM, TAD, and Hybrid are compared
+            on identical terms.
+          </p>
+
+          <div class="table-container">
+            <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Type</th>
+                  <th>Features / Input</th>
+                  <th>Videos Evaluated</th>
+                  <th>Successfully Scored</th>
+                  <th>Avg LCS Recall (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>ActionFormer</strong></td>
+                  <td>TAD Baseline</td>
+                  <td>CLIP ViT-B/32</td>
+                  <td class="pending">-</td>
+                  <td class="pending">-</td>
+                  <td class="pending">-</td>
+                </tr>
+                <tr>
+                  <td><strong>Qwen3-VL (N=32)</strong></td>
+                  <td>VLM Baseline</td>
+                  <td>frames</td>
+                  <td class="pending">-</td>
+                  <td class="pending">-</td>
+                  <td class="pending">-</td>
+                </tr>
+                <tr>
+                  <td><strong>Hybrid</strong></td>
+                  <td>TAD + VLM</td>
+                  <td>CLIP + frames</td>
+                  <td class="pending">-</td>
+                  <td class="pending">-</td>
+                  <td class="pending">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     V. CONCLUSION
+═══════════════════════════════════════════════════ -->
+<section class="section is-alt" id="conclusion">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">V. Conclusion and Limitations</h2>
+        <div class="content has-text-justified">
+
+          <p>bla bla</p>
+
+          <h3 class="title is-5">Limitations</h3>
+          <ul>
+            <li>
+              <strong>Limitation1.</strong> bla bla
+            </li>
+            <li>
+              <strong>Limitation2.</strong> bla bla
+            </li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     FOOTER — Individual Contributions
+═══════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-10">
+        <div class="content">
+          <h2 class="title is-4 has-text-centered" style="margin-bottom:1.5rem;">Individual Contributions</h2>
+
+          <div class="columns is-multiline">
+
+            <div class="column is-half">
+              <div class="box contrib-box">
+                <p class="has-text-weight-bold is-size-5">
+                  Rim El Qabli
+                  <span class="tag is-light is-normal" style="margin-left:6px;">340997</span>
+                </p>
+                <div class="tags" style="margin-top:8px;">
+                  <span class="tag is-info is-light">TAD Pipeline</span>
+                  <span class="tag is-info is-light">Validation</span>
+                  <span class="tag is-info is-light">Evaluation</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="box contrib-box" style="border-top-color:#e67e22;">
+                <p class="has-text-weight-bold is-size-5">
+                  Sofia Taouhid
+                  <span class="tag is-light is-normal" style="margin-left:6px;">339880</span>
+                </p>
+                <div class="tags" style="margin-top:8px;">
+                  <span class="tag is-warning is-light">Data Processing</span>
+                  <span class="tag is-warning is-light">Hybrid Pipeline</span>
+                  <span class="tag is-warning is-light">Website Development</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="box contrib-box" style="border-top-color:#e67e22;">
+                <p class="has-text-weight-bold is-size-5">
+                  Lina Sadgal
+                  <span class="tag is-light is-normal" style="margin-left:6px;">342075</span>
+                </p>
+                <div class="tags" style="margin-top:8px;">
+                  <span class="tag is-warning is-light">Data Processing</span>
+                  <span class="tag is-warning is-light">Hybrid Pipeline</span>
+                  <span class="tag is-warning is-light">Evaluation</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="box contrib-box" style="border-top-color:#257942;">
+                <p class="has-text-weight-bold is-size-5">
+                  Gauthier Nielly
+                  <span class="tag is-light is-normal" style="margin-left:6px;">346271</span>
+                </p>
+                <div class="tags" style="margin-top:8px;">
+                  <span class="tag is-success is-light">VLM Baseline</span>
+                  <span class="tag is-success is-light">Inference</span>
+                  <span class="tag is-success is-light">Evaluation</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <p class="has-text-centered" style="margin-top:1.5rem; font-size:13px; color:#888;">
+            <em>
+              This website follows the
+              <a href="https://github.com/EPFL-VILAB/cs503-project-webpage-template" target="_blank">CS-503 project webpage template</a>,
+              based on the <a href="https://github.com/nerfies/nerfies.github.io" target="_blank">Nerfies template</a>,
+              licensed under
+              <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+            </em>
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
