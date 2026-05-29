@@ -31,6 +31,7 @@
     <a href="#method">Method</a>
     <a href="#experiments">Experiments</a>
     <a href="#conclusion">Conclusion</a>
+    <a href="#references">References</a>
   </nav>
 </div>
 
@@ -40,18 +41,18 @@
     Long-Form Activity Videos via Structure-Guided VLM Reasoning
   </h1>
   <p class="hero-sub">
-    How to map the gap between what Vision Language Models <em>see</em> and what they <em>understand</em>
-    about time ?
+    How to bridge the gap between what Vision Language Models <em>see</em> and what they <em>understand</em>
+    about time?
   </p>
   <div class="hero-authors">
-    <a href="https://people.epfl.ch/">Rim El Qabli</a>,&nbsp;
-    <a href="https://people.epfl.ch/">Gauthier Nielly</a>,&nbsp;
-    <a href="https://people.epfl.ch/">Lina Sadgal</a>,&nbsp;
-    <a href="https://people.epfl.ch/">Sofia Taouhid</a>
+    Rim El Qabli,&nbsp;
+    Gauthier Nielly,&nbsp;
+    Lina Sadgal,&nbsp;
+    Sofia Taouhid
   </div>
-  <div class="hero-affil">EPFL &mdash; CS-503 Visual Intelligence: Machines and Minds</div>
+  <div class="hero-affil">EPFL - CS-503 Visual Intelligence: Machines and Minds</div>
   <div class="hero-links">
-    <a href="https://github.com/gauthiernielly/Visual-Intelligence-Project/tree/hybrid"><i class="fab fa-github"></i> Code</a>
+    <a href="https://github.com/gauthiernielly/Visual-Intelligence-Project/tree/main"><i class="fab fa-github"></i> Code</a>
   </div>
   <div class="hero-scroll">Scroll to explore &nbsp;&darr;</div>
 </section>
@@ -73,28 +74,26 @@
       <p class="col-block">
         Vision Language Models (VLMs) increasingly serve as unified architectures
         for video understanding, yet recent studies show they fail at temporal reasoning even
-        on tasks specifically designed to measure it. Critically, this failure stems from
-        temporal <em>localization</em>, not semantic understanding: VLMs recognize actions
+        on tasks designed to measure it. The failure is one of temporal
+        <em>localization</em>, not semantic understanding: VLMs recognize actions
         but cannot determine <em>when</em> they occur.
       </p>
       <p class="col-block">
-        We propose a hybrid pipeline using temporal action detection (TAD) proposals as
-        structural baseline to guide VLM reasoning on long untrimmed activity videos.
-        ActionFormer within OpenTAD generates candidate segments, passed to a Vision Language Model
-        (Qwen3-VL) for semantic labeling and composite activity inference.
+        We propose a hybrid pipeline that uses temporal action detection (TAD) proposals to
+        guide VLM reasoning on long untrimmed videos: ActionFormer (within OpenTAD) generates
+        candidate segments, which a VLM (Qwen3-VL) labels for semantic and composite activity
+        inference.
       </p>
       <p class="col-block">
-        We evaluate on the Toyota Smarthome Untrimmed (TSU) dataset, where all prior work is
-        TAD-only and no VLM evaluation exists, making ours the
-        <strong>first VLM baseline on TSU</strong>. Our results reveal that VLMs correctly
+        We evaluate on Toyota Smarthome Untrimmed (TSU), where all prior work is
+        TAD-only, making ours the <strong>first VLM baseline on TSU</strong>. VLMs correctly
         identify activity threads but hallucinate temporal structure, motivating the hybrid
-        approach. Rather than a clear win, the hybrid pipeline <strong>redistributes</strong>
-        performance: it trades the TAD baseline's high recall for higher precision, ending up
-        roughly equivalent in F1 &mdash; the VLM filters redundant detections but does not recover
-        more ground-truth actions. Our structured analysis localises <em>why</em>: failure is
-        concentrated in rare, fine-grained action classes rather than driven by video length or
-        complexity. The contribution is therefore a first baseline and a diagnostic framework that
-        produces informative results regardless of outcome, concretely directing future work toward
+        design. Rather than a clear win, the pipeline <strong>redistributes</strong>
+        performance: it trades the TAD baseline's high recall for higher precision at roughly
+        equivalent F1, filtering redundant detections without recovering more ground-truth
+        actions. Our analysis localizes <em>why</em>: failure concentrates in rare, fine-grained
+        action classes rather than scaling with video length or complexity. The contribution is
+        thus a first baseline and a diagnostic framework that directs future work toward
         rare-class detection and temporal-boundary refinement.
       </p>
     </div>
@@ -144,8 +143,8 @@
       <li>The <strong>first VLM evaluation on TSU</strong>, establishing a baseline where none exists.</li>
       <li>A direct test of whether external temporal scaffolding at inference time can substitute
           for architectural changes to VLMs.</li>
-      <li>A structured analysis framework producing informative results regardless of outcome &mdash;
-          each failure mode redirects future work concretely.</li>
+      <li>A structured analysis framework producing informative results regardless of outcome.
+          Each failure mode redirects future work concretely.</li>
     </ul>
   </div>
 </section>
@@ -162,10 +161,11 @@
         <div class="col-block">
           <h3 style="margin-top:0;">Temporal Reasoning Failures in VLMs</h3>
           <p>
-            TVBench demonstrated near-chance performance on temporal ordering and counting tasks,
-            with shuffled frames barely affecting accuracy. TemporalBench confirmed this on
-            fine-grained probes: GPT-4o reaches only 38.5% vs. 67.9% for humans. Wang et al.
-            traced failures to spatial-only attention in vision encoders; MERIT showed that correct
+            TVBench<a class="cite" href="#ref1">[1]</a> demonstrated near-chance performance on
+            temporal ordering and counting tasks, with shuffled frames barely affecting accuracy.
+            TemporalBench<a class="cite" href="#ref2">[2]</a> confirmed this on fine-grained probes:
+            GPT-4o reaches only 38.5% vs. 67.9% for humans. Rasekh et al.<a class="cite" href="#ref12">[12]</a>
+            traced failures to spatial-only attention in vision encoders; MERIT<a class="cite" href="#ref13">[13]</a> showed that correct
             visual cue identification is insufficient without temporal-causal inference.
           </p>
         </div>
@@ -173,10 +173,10 @@
         <div class="col-block">
           <h3 style="margin-top:0;">Segment-Then-Reason Approaches</h3>
           <p>
-            T* iteratively selects key frames before reasoning about them. MR. Video applies a
-            MapReduce paradigm across video segments, achieving state-of-the-art on long-video
-            benchmarks. Structure-guided prompting improved temporal QA accuracy by up to 17.7%
-            in autonomous driving scenarios. Our work tests whether this principle transfers to
+            T*<a class="cite" href="#ref3">[3]</a> iteratively selects key frames before reasoning
+            about them. MR. Video<a class="cite" href="#ref4">[4]</a> applies a MapReduce paradigm
+            across video segments, achieving state-of-the-art on long-video benchmarks. Structure-guided prompting improved temporal QA accuracy by up to 17.7%
+            in autonomous driving scenarios<a class="cite" href="#ref14">[14]</a>. Our work tests whether this principle transfers to
             long-form daily activity videos with dense hierarchical annotations.
           </p>
         </div>
@@ -184,10 +184,10 @@
         <div class="col-block">
           <h3 style="margin-top:0;">Temporal Action Detection on TSU</h3>
           <p>
-            Prior TAD-only work on TSU includes PDAN (~32.7% frame-mAP) and the current
-            state-of-the-art MS-Temba (2025), which reports CLIP features outperforming I3D on
-            this benchmark. Crucially, <em>no VLM has been evaluated on TSU</em> &mdash; the gap
-            this work sets out to fill.
+            Prior TAD-only work on TSU includes PDAN<a class="cite" href="#ref9">[9]</a> (~32.7% frame-mAP) and the current
+            state-of-the-art MS-Temba<a class="cite" href="#ref5">[5]</a> (2025), which reports CLIP features outperforming I3D on
+            this benchmark. Crucially, <em>no VLM has been evaluated on TSU</em>. Our work fills this gap, 
+            providing the first VLM baseline on TSU and directly comparing it to TAD-only performance.
           </p>
         </div>
 
@@ -223,14 +223,14 @@
       design space: a dedicated temporal action detector, which localises precisely but is
       restricted to a fixed label set, and a pure Vision Language Model, which is semantically
       flexible but weak at temporal grounding. We deliberately pick one model from each paradigm
-      so that the hybrid can be measured against <em>both</em> &mdash; only then can we tell whether
+      so that the hybrid can be measured against <em>both</em>, only then can we tell whether
       fusing them resolves each other's weaknesses rather than simply inheriting the stronger one.
       We then build a <strong>hybrid pipeline</strong> that fuses the two.
     </p>
     
     <h3>Dataset: Toyota Smarthome Untrimmed (TSU)</h3>
     <p>
-      TSU provides 536 long untrimmed daily-activity videos (average duration of 21 min) from fixed cameras
+      TSU<a class="cite" href="#ref8">[8]</a> provides 536 long untrimmed daily-activity videos (average duration of 21 min) from fixed cameras
       in a real apartment, with dense annotations for 51 activity classes at 25 fps. We use
       the Cross-Subject (CS) protocol (subject-disjoint with no train/test overlap). We produce
       a derived ActivityNet-style annotation JSON with timestamps in seconds for compatibility
@@ -239,23 +239,28 @@
 
     <h3>Baseline 1: ActionFormer (TAD)</h3>
     <p>
-      We pick ActionFormer as our TAD baseline because it is a strong, widely-used single-stage
-      detector that is natively supported in OpenTAD, giving a reproducible reference point for
-      the localisation side. We train it on the TSU CS split. Feature extraction uses CLIP
-      ViT-B/32 at stride 16. We sample one frame every 0.64 s and pass each frame through CLIP's
-      image encoder to get a 512-dimensional vector.
-      Since TSU is not among OpenTAD's nine natively supported datasets, we wrote a TSU-specific
-      config reusing OpenTAD's <code>ThumosPaddingDataset</code> class, the same approach used
-      by Multi-THUMOS.
+      We pick ActionFormer<a class="cite" href="#ref6">[6]</a> as our temporal action detection
+      baseline because it is a strong, widely used single-stage detector with native support in
+      OpenTAD<a class="cite" href="#ref7">[7]</a>. We train it from scratch on the TSU Cross-Subject
+      split using frozen CLIP<a class="cite" href="#ref11">[11]</a> ViT-B/32 features (one frame every
+      0.64&nbsp;s, one 512-dimensional vector per snippet), which compresses a 20-minute video into
+      roughly 1,900 vectors. ActionFormer reads the whole sequence at once and outputs candidate
+      segments, each with a start time, end time, one of the 51 TSU labels, and a confidence score.
+      Because TSU ships no OpenTAD configuration, we wrote one reusing OpenTAD's
+      <code>ThumosPaddingDataset</code> class (the same path as Multi-THUMOS) and left the
+      architecture, loss, and post-processing at OpenTAD defaults. Full training hyperparameters are
+      listed in the <a href="#appendix" style="color:var(--accent);">Appendix</a> (Table A1).
     </p>
 
     <h3>Baseline 2: Pure Vision Language Model</h3>
     <p>
-      We pick Qwen3-VL-8B as our VLM baseline because it is a strong, open-weights video LLM that
-      fits our hardware (2&times; NVIDIA V100, 64 GB VRAM), letting us probe the semantic side
-      without proprietary-API constraints. We evaluate it on TSU videos at N=32 uniformly sampled
-      frames, querying it with structured prompts that request JSON timelines with labels
-      constrained to the 51-class TSU ontology.
+      We pick Qwen3-VL-8B<a class="cite" href="#ref10">[10]</a> as our VLM baseline because it is a strong, open-weights video LLM that
+      fits our hardware (2&times; NVIDIA V100), letting us probe the semantic side without
+      proprietary-API constraints. Because the full video cannot fit within the VRAM and token
+      budget, each video is split into one-minute windows, sampling 35 frames per window (one frame
+      every ~1.7&nbsp;s). To enable automatic comparison with the ground truth, the model is prompted
+      to return a structured JSON timeline of activity segments with global frame indices rather than
+      free-form text; an embedded frame map tells it which real timestamp each frame corresponds to.
     </p>
 
     <h3>Hybrid Pipeline</h3>
@@ -339,7 +344,7 @@
   <div class="framed">
     <div class="frame-title">
       <span class="frame-num orange">04</span>
-      <h2>Experiments</h2>
+      <h2>Evaluation Setup</h2>
     </div>
 
   <div class="reveal">
@@ -401,149 +406,36 @@
       from sparse visual cues.
     </p>
 
-    <h3>Evaluation Setup</h3>
-
-    <div class="two-up">
-      <div>
-        <h4 style="margin-top:0;">The Density Mismatch Problem</h4>
-        <p>
-          A fundamental challenge is that GT annotations and model predictions operate at different 
-          densities: human annotators log salient, active interactions while omitting the passive 
-          background states that the VLM and TAD systems readily label (we illustrate this concretely in the example below).
-        </p>
-        <p>
-          This creates a structural mismatch: a predicted sequence of 250 actions being
-          compared against a GT of 80 does not mean the model is wrong 170 times,
-          it often means the model is more thorough than the annotator. Any metric that
-          penalises insertions will unfairly punish the denser system.
-        </p>
-      </div>
-      <div>
-        <h4 style="margin-top:0;">Why Not Exact Match or Edit Distance?</h4>
-        <p>
-          <strong>Exact match</strong> requires identical sequence length and content. Given the
-          density mismatch described above, it would score near zero for every video regardless
-          of labeling quality, it is simply the wrong tool for this comparison.
-        </p>
-        <p>
-          <strong>Edit distance</strong> (Levenshtein) charges a unit cost for every insertion,
-          deletion, and substitution. Each extra <code>Watch_TV</code> prediction that the
-          annotator simply skipped would incur a penalty, conflating <em>being more thorough</em>
-          with <em>being wrong</em>.
-        </p>
-      </div>
-    </div>
-
-    <h4>Why LCS Recall?</h4>
+    <h3>Evaluation Metric</h3>
     <p>
-      The Longest Common Subsequence captures the largest set of GT actions that appear in
-      the predicted sequence in the correct chronological order, ignoring any extra
-      predictions in between. Formally:
+      GT annotations and model predictions operate at very different densities, so a predicted
+      sequence can be several times longer than the ground truth without being wrong. This rules
+      out exact match (demands identical length, scores near zero on every video) and edit distance
+      (charges a unit cost for each extra <code>Watch_TV</code> the annotator skipped, conflating
+      <em>being more thorough</em> with <em>being wrong</em>). We use the
+      <strong>Longest Common Subsequence (LCS)</strong> instead: it captures the largest set of GT
+      actions appearing in the predicted sequence in the correct chronological order, ignoring
+      insertions. Formally:
     </p>
     <p style="text-align:center; font-size: 18px; margin: 24px 0;">
       $\text{LCS Recall} = \dfrac{|\text{LCS}(\text{GT}, \text{Pred})|}{|\text{GT}|} \times 100$
     </p>
-    <p>This has three properties that make it appropriate here:</p>
-    <ul>
-      <li>
-        <strong>Insertion-insensitive.</strong> Extra VLM predictions between matched GT
-        actions are simply skipped, not penalised. The question becomes: &ldquo;did the model
-        recover what the annotator logged?&rdquo;
-      </li>
-      <li>
-        <strong>Order-sensitive.</strong> Unlike set-based metrics (e.g. label overlap),
-        LCS requires the matched actions to appear in the same temporal order in both
-        sequences. A model that hallucinates the correct labels in the wrong order is
-        correctly penalised.
-      </li>
-      <li>
-        <strong>Metric-agnostic across systems.</strong> Because the metric operates on
-        ordered label sequences rather than timestamps, it applies identically to TAD
-        output, VLM output, and the hybrid pipeline, making all three directly comparable
-        without requiring timestamp alignment or IoU matching between predicted and GT
-        segments.
-      </li>
-    </ul>
-
-    <h4>Reporting Alongside Precision and F1</h4>
     <p>
-      LCS Recall alone is not sufficient as a sole metric, since a system predicting
-      thousands of random labels would score perfectly. We therefore also report
-      <strong>LCS Precision</strong>, defined symmetrically as
-      $|\text{LCS}| \,/\, |\text{Pred}|$, and the harmonic <strong>F1</strong>. Together,
-      these three numbers capture both coverage (recall) and prediction quality (precision),
-      giving a complete picture of each system&rsquo;s trade-offs.
+      This is insertion-insensitive (extra predictions are skipped, not penalised),
+      order-sensitive (correct labels in the wrong order are penalised), and applies
+      identically to TAD, VLM, and Hybrid output without requiring timestamp alignment.
+      We also report <strong>LCS Precision</strong> ($|\text{LCS}|/|\text{Pred}|$) and
+      their harmonic <strong>F1</strong> to prevent a trivially dense system from scoring
+      well on recall alone.
     </p>
 
-    <h3>A Representative Example</h3>
+    <h3>Headline Results</h3>
     <p>
-      We first examine a representative example to build intuition for what the evaluation
-      measures and why standard metrics alone are insufficient. The figure below shows the action
-      timeline for video <strong>P16T08C02</strong>, a 20.5-minute recording from the TSU dataset.
-      The three rows correspond to the ground truth annotations and the predictions of our two
-      systems. Even without reading the numbers, the structural asymmetry between the three systems
-      is immediately apparent.
-    </p>
-
-    <div class="pipeline-card" style="margin: 24px 0;">
-      <img src="images/timeline_example.png" alt="Action timeline for video P16T08C02: ground truth, TAD, and Hybrid predictions"
-           style="width:100%; height:auto; display:block; border-radius:6px;">
-      <span class="caption">
-        <strong>Figure 2.</strong> Action timeline for video P16T08C02 (20.5 min). Each row is a
-        sequence of colour-coded action segments: ground truth (GT, 60 actions), the TAD baseline
-        (205 predictions), and the Hybrid pipeline (172 predictions). The denser, larger-block TAD
-        row and the sparser GT row make the density mismatch immediately visible.
-      </span>
-    </div>
-
-    <h4>The Density Mismatch in Practice</h4>
-    <p>
-      The GT contains 60 sparsely distributed annotations logged by a human annotator.
-      TAD produces 205 predictions across the same duration, and the Hybrid pipeline keeps 172.
-      Human annotators on TSU record salient, active interactions such as <code>Get_Up</code>,
-      <code>Drink_From_Cup</code>, or <code>Take_Something_Off_Table</code>, while omitting
-      passive background states that persist between them. Both TAD and the VLM, by contrast,
-      actively identify and label these intermediate states (<code>Watch_TV</code>,
-      <code>Sit_Down</code>, <code>Use_Laptop</code>) because they are visually present
-      throughout the video. This asymmetry is structural, not a failure of either system, and it
-      is the primary reason why evaluation metrics must be chosen carefully.
-    </p>
-
-    <h4>TAD&rsquo;s Localisation Problem</h4>
-    <p>
-      Looking at the TAD row, several large monolithic blocks are visible, most notably an
-      extended segment spanning roughly minutes 1 through 8. This corresponds to a single label
-      held across a long continuous duration, a pattern that has no equivalent in the GT.
-      This reveals a core limitation of the TAD baseline: even when the predicted label is
-      semantically correct, the temporal boundaries are too imprecise to constitute a meaningful
-      localisation. At IoU 0.5, a segment that covers the right action but spans three times the
-      annotated duration scores zero, regardless of label correctness. TAD&rsquo;s high LCS Recall
-      is partly an artifact of this over-extension: a long predicted segment overlapping several
-      GT actions allows the LCS algorithm to match many GT actions against a single
-      prediction, inflating recall without reflecting genuine temporal understanding.
-    </p>
-
-    <h4>What the Hybrid Pipeline Changes</h4>
-    <p>
-      The Hybrid row is visibly more fragmented and colour-diverse than TAD, indicating that the
-      VLM actively relabels and subdivides the large TAD segments into shorter, more varied
-      predictions. This is reflected in the improved precision of the Hybrid system, fewer
-      predictions are wasted. However, the Hybrid row remains substantially denser than the ground
-      truth, particularly in the second half of the video (minutes 10&ndash;20), where the ground
-      truth records a single long passive state while both systems continue predicting activity.
-      This confirms the central finding of our qualitative analysis: the VLM, influenced by the
-      TAD segmentation, identifies more activity threads than the human annotator logged, which
-      is not strictly wrong, but cannot be rewarded by a metric anchored to sparse human annotations.
-    </p>
-
-    <h3>Quantitative Results</h3>
-    <p>
-      The table below quantifies these observations across all evaluated videos. Because the three
-      systems operate at fundamentally different prediction densities, we report LCS Recall, LCS
-      Precision, and their harmonic mean F1 as a unified evaluation framework. We additionally
-      report segment-level mAP at IoU thresholds 0.1, 0.3, and 0.5 for the TAD and Hybrid systems,
-      which measures temporal localisation quality independently of sequence structure. mAP is not
-      reported for the VLM baseline as it does not produce reliable timestamp predictions.
+      Because the three systems operate at fundamentally different prediction densities, we report
+      LCS Recall, LCS Precision, and their harmonic mean F1 as a unified evaluation framework, plus
+      segment-level mAP at IoU 0.1/0.3/0.5 for the systems whose detections carry confidence scores.
+      The VLM emits no confidence scores, so it cannot be ranked into the same mAP pipeline. We report
+      a separately-computed diagnostic mAP for it. 
     </p>
   </div>
 
@@ -565,33 +457,319 @@
         <tr>
           <td><strong>ActionFormer</strong></td>
           <td>TAD Baseline</td>
-          <td class="pending">-</td>
-          <td class="pending">-</td>
-          <td class="pending">-</td>
-          <td class="pending">-</td>
-          <td class="pending">-</td>
-          <td class="pending">-</td>
+          <td>72.5</td>
+          <td>26.8</td>
+          <td>36.6</td>
+          <td>22.07</td>
+          <td>17.82</td>
+          <td>13.05</td>
         </tr>
         <tr>
-          <td><strong>Qwen3-VL (N=32)</strong></td>
+          <td><strong>Qwen3-VL-8B</strong></td>
           <td>VLM Baseline</td>
-          <td class="pending">-</td>
-          <td class="pending">-</td>
-          <td class="pending">-</td>
-          <td colspan="3" style="text-align:center; color:#aaa; font-style:italic;">N/A</td>
+          <td>22.3</td>
+          <td>59.5</td>
+          <td>30.9</td>
+          <td>2.13</td>
+          <td>1.42</td>
+          <td>0.78</td>
         </tr>
         <tr>
           <td><strong>Hybrid</strong></td>
           <td>TAD + VLM</td>
-          <td><strong>49.0</strong></td>
-          <td><strong>30.7</strong></td>
-          <td><strong>36.2</strong></td>
-          <td class="pending">-</td>
-          <td class="pending">-</td>
+          <td>52.0</td>
+          <td>30.7</td>
+          <td>36.2</td>
+          <td>12.7</td>
+          <td>8.5</td>
           <td>5.9</td>
         </tr>
       </tbody>
     </table>
+  </div>
+  </div>
+</section>
+
+<section class="chapter wide" id="tad">
+  <div class="reveal framed">
+    <div class="frame-title">
+      <span class="frame-num orange">05</span>
+      <h2>ActionFormer (TAD): Results &amp; Analysis</h2>
+    </div>
+
+    <p>
+      The full training configuration is described in the
+      <a href="#method" style="color:var(--accent);">Method</a> section. Here we report what the
+      trained detector actually does. First, the loss curves confirm the run behaved as expected.
+    </p>
+
+    <div class="pipeline-card">
+      <img src="images/01_tad_training_curves.png" alt="ActionFormer training and validation loss curves">
+      <span class="caption">
+        <strong>Figure 2.</strong> Training and validation loss curves for ActionFormer on the TSU
+        Cross-Subject split. Training loss decreases monotonically over 40 epochs. Validation loss
+        reaches its minimum around epoch 20 and increases afterwards, which is the standard signature
+        of mild overfitting on a single subject validation set. The checkpoint selected for evaluation
+        is the best validation loss checkpoint, near epoch 20.
+      </span>
+    </div>
+
+    <h3>Inference Behaviour and the Need for a Matched Prefilter</h3>
+    <p>
+      At test time the trained model produces a very dense set of candidate segments. Across the 86
+      videos of the evaluation subset, ActionFormer outputs roughly 82,000 raw detections before any
+      cleanup, against approximately 6,700 ground truth segments. This 12 to 1 prediction to GT ratio
+      is by design, the detector intentionally over-proposes to maximise recall, but it has two
+      consequences that we control for in the evaluation. First, the score distribution is heavily
+      skewed toward low confidence proposals, so a confidence cut-off is necessary. Second,
+      ActionFormer fires multiple overlapping segments for the same true action, so per class
+      Non-Maximum Suppression is necessary as well.
+    </p>
+
+    <p>
+      To make the TAD numbers directly comparable to the Hybrid pipeline, we apply the exact same
+      prefilter the Hybrid pipeline uses before invoking the VLM. The three steps are deduplication of
+      identical detections, a confidence threshold of 0.15, and per class temporal NMS at IoU 0.3.
+      This brings the prediction density of the TAD output in line with what the VLM actually sees
+      inside the Hybrid pipeline, so that any performance difference between the two pipelines reflects
+      the VLM relabelling step rather than a difference in candidate density.
+    </p>
+
+    <h3>TAD Numbers on the 86-Video Subset</h3>
+    <p>
+      We score the TAD baseline on the 86-video evaluation subset after the matched prefilter
+      described above. It reaches <strong>LCS Recall 72.5%</strong>, Precision 26.8% and
+      <strong>F1 36.6%</strong>, with segment-level mAP of 22.07 / 17.82 / 13.05 at IoU 0.1 / 0.3 /
+      0.5 (the full three-system comparison is the headline results table in the
+      <a href="#experiments" style="color:var(--accent);">Evaluation Setup</a> section).
+    </p>
+
+    <p>
+      Compared to the Hybrid pipeline (Recall 52.0, Precision 30.7, F1 36.2), TAD recovers
+      substantially more ground truth actions (Recall +20.5) while being less selective in its
+      predictions (Precision -3.9). The F1 score is essentially tied (TAD 36.6 vs Hybrid 36.2), which
+      means that on average the VLM relabelling stage redistributes performance from precision to
+      recall rather than improving total sequence quality.
+    </p>
+
+    <h3>Per-Subject Behaviour</h3>
+    <p>
+      Across the 7 unseen test subjects, F1 varies by only ~12 points and no subject collapses (high
+      recall, low precision everywhere), so the detector generalises across people rather than
+      memorising specific training subjects. The per-subject breakdown (Figure 14) is deferred to the
+      <a href="#appendix" style="color:var(--accent);">Appendix</a>.
+    </p>
+
+    <h3>Per-Class Behaviour at Strict Overlap</h3>
+    <p>
+      Beyond sequence level LCS, we report per class Average Precision at IoU 0.5 to measure how well
+      the TAD baseline localises each action with strict temporal alignment.
+    </p>
+
+    <div class="pipeline-card" style="max-width: 720px; margin-left: auto; margin-right: auto;">
+      <img src="images/03_tad_per_class_ap.png" alt="TAD per-class Average Precision at IoU 0.5">
+      <span class="caption">
+        <strong>Figure 3.</strong> TAD baseline per class Average Precision at IoU 0.5 on the 86 video
+        subset, covering all 51 TSU classes and sorted by descending AP. Green bars are above 40 %,
+        yellow bars between 20 and 40 %, red bars below 20 %, grey bars are exactly zero.
+      </span>
+    </div>
+
+    <p>
+      The chart shows a three tier structure. A small head of visually distinctive actions (clear
+      postural changes or specific appliance interactions) crosses 30 % AP, a middle tier of visually
+      generic or transitional actions sits between 20 and 40 %, and a long tail of rare fine grained
+      sub-actions collapses to zero. The residual error budget is therefore concentrated in a
+      predictable subset of rare and fine grained classes rather than distributed uniformly across the
+      ontology.
+    </p>
+
+    <h3>Robustness to Video Complexity</h3>
+    <p>
+      TAD recall does not degrade with video length: regressed against the number of ground-truth
+      actions per video it is essentially flat (slope &minus;0.004, Pearson <em>r</em> = &minus;0.01),
+      so the structural backbone is robust to long videos and the per-video variance is driven by which
+      classes a video contains rather than by how long it is (scatter plot, Figure 15, in the
+      <a href="#appendix" style="color:var(--accent);">Appendix</a>).
+    </p>
+
+  </div>
+</section>
+
+<section class="chapter wide" id="vlm">
+  <div class="reveal framed">
+    <div class="frame-title">
+      <span class="frame-num">06</span>
+      <h2>Qwen3-VL (VLM): Results &amp; Analysis</h2>
+    </div>
+
+    <p>
+      The VLM setup (Qwen3-VL-8B, one-minute windows of 35 frames, JSON-timeline prompting with a
+      frame map) is described in the <a href="#method" style="color:var(--accent);">Method</a>
+      section. We evaluate on the same 86 Cross-Subject test videos (7 unseen subjects) used for the
+      ActionFormer baseline and the Hybrid pipeline, for direct comparability.
+    </p>
+
+    <h3>Q&amp;A Benchmarking</h3>
+    <p>
+      To test whether the model performs genuine temporal reasoning or merely exploits static cues, we
+      built a diagnostic Q&amp;A benchmark on 5 high-density videos (~15 auto-generated questions each,
+      spanning ordering, counting, and duration comparison), answered under three conditions: normal
+      frames, shuffled frames, and blind inference with no video. The pattern is clear and consistent:
+      answers are identical for normal and shuffled frames, confirming the model does not use temporal
+      order from the visual input, and the blind condition sometimes scores highest, revealing reliance
+      on language priors over visual evidence rather than genuine temporal reasoning.
+    </p>
+
+    <h3>Timeline Reconstruction</h3>
+    <p>
+      Beyond Q&amp;A, the core task is full timeline reconstruction on the 86 test videos,
+      evaluated via LCS (ordering quality), event-mAP (localisation precision), and
+      per-class and per-duration recall (detection coverage).
+    </p>
+    <p>
+      <strong>LCS and mAP:</strong> The headline LCS results show a strong asymmetry: precision is
+      relatively high (59.5%) while recall is low (22.3%), giving an F1 of 30.9%. This means the
+      model's predictions, when correct, tend to appear in the right order, but it only recovers
+      roughly one in four ground truth activities. Event-mAP is very low across all thresholds (2.13% 
+      at IoU 0.1, 1.42% at IoU 0.3, 0.78% at IoU 0.5), reflecting the model's inability to produce 
+      precisely localised segments, as expected from a system sampling one frame every 1.7 seconds. The
+      hallucination rate is 52%, meaning about half of all predicted segments have no matching ground
+      truth. The most frequently hallucinated classes are Walk, Drink_From_Cup, and Get_Up, which are
+      common daily activities the model tends to over-predict even when absent.
+    </p>
+
+    <div class="wide-content">
+      <table class="data-table" style="max-width:420px; margin-left:auto; margin-right:auto;">
+        <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>LCS Recall</td><td><strong>22.3%</strong></td></tr>
+          <tr><td>LCS Precision</td><td><strong>59.5%</strong></td></tr>
+          <tr><td>LCS F1</td><td><strong>30.9%</strong></td></tr>
+          <tr><td>Mean recall (per class)</td><td>6.9%</td></tr>
+          <tr><td>mAP @ IoU 0.1 / 0.3 / 0.5</td><td>2.13% / 1.42% / 0.78%</td></tr>
+          <tr><td>Hallucination rate</td><td>52.2%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Detection by duration</h4>
+    <p>
+      One of the most informative findings concerns the relationship between event duration and
+      detection rate. Events shorter than 2 seconds are essentially invisible to the model: recall is
+      0.4% for sub-1s events and 1.1% for 1&ndash;2s events. Detection only becomes meaningful for
+      events longer than 30 seconds, which reach 53.3% recall. This is a direct and expected
+      consequence of the 1.7-second inter-frame interval: a median-length event of 1.76 seconds is
+      captured by at most one frame, making reliable detection impossible regardless of the model's
+      semantic capabilities.
+    </p>
+
+    <div class="fig-pair">
+      <div class="pipeline-card">
+        <iframe src="images/recall_by_duration.html" height="430" loading="lazy" title="VLM recall by event duration"></iframe>
+        <span class="caption"><strong>Figure 4.</strong> VLM recall by event duration. Events under 2&nbsp;s are essentially undetected; recall only becomes meaningful above 30&nbsp;s.</span>
+      </div>
+      <div class="pipeline-card">
+        <iframe src="images/per_class_recall.html" height="430" loading="lazy" title="VLM per-class recall"></iframe>
+        <span class="caption"><strong>Figure 5.</strong> VLM per-class recall. Long-duration classes (<code>Read</code>, <code>Use_Laptop</code>) score highest; short, transient ones score near zero.</span>
+      </div>
+    </div>
+
+    <p>
+      The two charts are complementary: the duration chart explains why recall is low overall, while
+      the per-class chart shows which activities are affected: classes like Read and Use_Laptop
+      (long-duration activities) score highest, while Sit_Down and Take_Something_Off_Table (short and
+      transient) score near zero.
+    </p>
+
+    <div class="pipeline-card">
+      <iframe src="images/timeline_viewer.html" height="560" loading="lazy" title="Interactive GT vs VLM timeline viewer"></iframe>
+      <span class="caption">
+        <strong>Figure 6.</strong> This interactive viewer shows GT vs VLM predicted segments for the
+        5 selected one-minute clips. It illustrates the qualitative pattern: the model correctly
+        identifies the dominant long-running activities but misses the dense short events, and
+        frequently predicts segments that are temporally displaced from their true position.
+      </span>
+    </div>
+
+    <p>
+      These resolution limits are not addressable through prompting alone, which is precisely what
+      motivates the hybrid pipeline below; we return to the VLM's standalone strengths and weaknesses
+      in the overall <a href="#conclusion" style="color:var(--accent);">Conclusion</a>.
+    </p>
+  </div>
+</section>
+
+<section class="chapter wide" id="hybrid">
+  <div class="framed">
+    <div class="frame-title">
+      <span class="frame-num">07</span>
+      <h2>Hybrid Pipeline: Results &amp; Analysis</h2>
+    </div>
+
+  <div class="reveal">
+    <h3>A Representative Example</h3>
+    <p>
+      We first examine a representative example to build intuition for what the evaluation
+      measures and why standard metrics alone are insufficient. The figure below shows the action
+      timeline for video <strong>P16T08C02</strong>, a 20.5-minute recording from the TSU dataset.
+      The three rows correspond to the ground truth annotations and the predictions of our two
+      systems. Even without reading the numbers, the structural asymmetry between the three systems
+      is immediately apparent.
+    </p>
+
+    <div class="pipeline-card" style="margin: 24px 0;">
+      <img src="images/timeline_example.png" alt="Action timeline for video P16T08C02: ground truth, TAD, and Hybrid predictions"
+           style="width:100%; height:auto; display:block; border-radius:6px;">
+      <span class="caption">
+        <strong>Figure 7.</strong> Action timeline for video P16T08C02 (20.5 min). Each row is a
+        sequence of colour-coded action segments: ground truth (GT, 60 actions), the TAD baseline
+        (205 predictions), and the Hybrid pipeline (172 predictions). The denser, larger-block TAD
+        row and the sparser GT row make the density mismatch immediately visible.
+      </span>
+    </div>
+
+    <h4>The Density Mismatch in Practice</h4>
+    <p>
+      The GT contains 60 sparsely distributed annotations logged by a human annotator.
+      TAD produces 205 predictions across the same duration, and the Hybrid pipeline keeps 172.
+      Human annotators on TSU record salient, active interactions such as <code>Get_Up</code>,
+      <code>Drink_From_Cup</code>, or <code>Take_Something_Off_Table</code>, while omitting
+      passive background states that persist between them. Both TAD and the VLM, by contrast,
+      actively identify and label these intermediate states (<code>Watch_TV</code>,
+      <code>Sit_Down</code>, <code>Use_Laptop</code>) because they are visually present
+      throughout the video. This asymmetry is structural, not a failure of either system, and it
+      is the primary reason why evaluation metrics must be chosen carefully.
+    </p>
+
+    <h4>TAD&rsquo;s Localisation Problem</h4>
+    <p>
+      Looking at the TAD row, several large monolithic blocks are visible, most notably the extended
+      teal segment spanning roughly minutes 1 through 8. This corresponds to a single label held
+      across a long continuous duration, a pattern that has no equivalent in the ground truth. This
+      reveals a core limitation of the TAD baseline: even when the predicted label is semantically
+      correct, the temporal boundaries are too imprecise to constitute a meaningful localisation.
+      This explains the low mAP scores we report in the table below, at IoU 0.5, a segment that
+      covers the right action but spans three times the annotated duration scores zero, regardless of
+      label correctness. TAD&rsquo;s high LCS Recall is partly an artifact of this over-extension: a long
+      predicted segment overlapping several GT actions allows the LCS algorithm to match many ground
+      truth actions against a single prediction, inflating recall without reflecting genuine temporal
+      understanding.
+    </p>
+
+    <h4>What the Hybrid Pipeline Changes</h4>
+    <p>
+      The Hybrid row is visibly more fragmented and colour-diverse than TAD, indicating that the
+      VLM actively relabels and subdivides the large TAD segments into shorter, more varied
+      predictions. This is reflected in the improved precision of the Hybrid system, fewer
+      predictions are wasted. However, the Hybrid row remains substantially denser than the ground
+      truth, particularly in the second half of the video (minutes 10&ndash;20), where the ground
+      truth records a single long passive state while both systems continue predicting activity.
+      This confirms the central finding of our qualitative analysis: the VLM, influenced by the
+      TAD segmentation, identifies more activity threads than the human annotator logged, which
+      is not strictly wrong, but cannot be rewarded by a metric anchored to sparse human annotations.
+    </p>
+
   </div>
 
   <div class="reveal">
@@ -601,7 +779,7 @@
       ordering, they make fundamentally different trade-offs. TAD achieves the highest LCS
       Recall but the lowest Precision, meaning it recovers most GT actions through sheer
       prediction volume rather than targeted localisation. The Hybrid pipeline sacrifices recall
-      (49%) in exchange for higher precision (30.7%), as the VLM filtering removes many of the
+      (52.0%) in exchange for higher precision (30.7%), as the VLM filtering removes many of the
       redundant TAD predictions. Crucially, the LCS F1 scores are nearly identical, confirming
       that the harmonic mean correctly normalises for the density difference and reveals the two
       systems to be roughly equivalent in overall sequence recovery quality. The Hybrid pipeline
@@ -610,12 +788,12 @@
 
     <h4>mAP Results</h4>
     <p>
-      The segment-level mAP scores are low across both systems (Hybrid: 5.9% at IoU 0.5),
-      reflecting the temporal boundary imprecision illustrated in the qualitative example. These
-      numbers are not directly comparable to prior TSU work such as PDAN (32.7% frame-mAP), which
-      uses a different and more lenient evaluation protocol. They do, however, confirm that neither
-      system achieves reliable temporal localisation under strict overlap criteria, and motivate
-      future work on boundary refinement.
+      The segment-level mAP scores are low across both systems (TAD: 13.05%, Hybrid: 5.9% at
+      IoU 0.5), reflecting the temporal boundary imprecision illustrated in the qualitative example.
+      These numbers are not directly comparable to prior TSU work such as PDAN (32.7% frame-mAP),
+      which uses a different and more lenient evaluation protocol. They do, however, confirm that
+      neither system achieves reliable temporal localisation under strict overlap criteria, and
+      motivate future work on boundary refinement.
     </p>
 
     <h3>Per-Class Analysis</h3>
@@ -624,72 +802,36 @@
       <img src="images/recall_by_class.png" alt="Bar chart of LCS Recall per action class, sorted descending"
            style="width:100%; height:auto; display:block; border-radius:6px;">
       <span class="caption">
-        <strong>Figure 3.</strong> LCS Recall per action class (classes with &ge;5 occurrences,
+        <strong>Figure 8.</strong> LCS Recall per action class (classes with &ge;5 occurrences,
         86 videos), sorted descending. Computed via LCS traceback to identify exactly which
         ground-truth actions were matched.
       </span>
     </div>
 
     <p>
-      The figure above shows LCS Recall broken down by action class, computed via LCS traceback to
-      identify precisely which GT actions were matched. Only classes with at least 5
-      occurrences across the test set are included for statistical reliability; the remaining
-      classes scored zero recall entirely.
+      Recall is highest (above 80%) for visually unambiguous, spatially distinctive actions
+      (<code>Get_Up</code>, <code>Sit_Down</code>, <code>Use_Cupboard</code>,
+      <code>Cook_Cut</code>, <code>Drink_From_Cup</code>, <code>Use_Fridge</code>) whose
+      clear postural changes and appliance interactions produce consistent visual signatures across
+      subjects and camera angles, suggesting the pipeline genuinely learned them. A middle tier
+      (40&ndash;65%: <code>Watch_TV</code>, <code>Cook</code>, <code>Enter</code>,
+      <code>Use_Laptop</code>, <code>Read</code>) is common but visually ambiguous, consisting of
+      background or transitional states that lack precise boundaries. Tellingly, <code>Walk</code>
+      and <code>Put_Something_On_Table</code> land here despite being among the three most frequent
+      classes. Visual distinctiveness matters more than training-signal volume.
     </p>
-
-    <h4>High-Recall Classes</h4>
     <p>
-      The top-performing classes (<code>Get_Up</code>, <code>Sit_Down</code>,
-      <code>Use_Cupboard</code>, <code>Cook_Cut</code>, <code>Drink_From_Cup</code>,
-      <code>Use_Fridge</code>) all share a common property: they are visually unambiguous and
-      spatially distinctive. These actions involve clear postural changes, specific appliances, or
-      object interactions that produce consistent visual signatures across subjects and camera
-      angles. TAD&rsquo;s temporal features, trained on CLIP representations, reliably detect the onset
-      and offset of these actions, and the VLM confirms them correctly when queried. Recall above
-      80% for these classes suggests the pipeline has genuinely learned to recognise them.
-    </p>
-
-    <h4>The Middle Tier</h4>
-    <p>
-      Classes scoring between 40% and 65% (<code>Watch_TV</code>, <code>Cook</code>,
-      <code>Enter</code>, <code>Use_Laptop</code>, <code>Read</code>) are common but visually
-      ambiguous. These are often background or transitional states that co-occur with other
-      activities and lack a precise temporal boundary. The pipeline detects them but not always at
-      the right moment or in the right order relative to other actions, which LCS penalises.
-      Notably, <code>Walk</code> and <code>Put_Something_On_Table</code> fall into this tier
-      despite being among the three most frequent classes in the dataset, frequency alone does
-      not guarantee recall, confirming that visual distinctiveness matters more than training signal
-      volume for this pipeline.
-    </p>
-
-    <h4>Low-Recall Classes</h4>
-    <p>
-      The bottom third of the chart reveals a sharp drop-off. Classes such as
-      <code>Take_Something_Off_Table</code> (25%), <code>Drink_From_Bottle</code> (18%),
-      <code>Write</code> (7%), and <code>Breakfast_Spread_Jam_Or_Butter</code> (4%) score near zero
-      despite having sufficient occurrences. Two failure modes are present. First, several of these
-      are fine-grained sub-actions of a broader category: <code>Drink_From_Bottle</code> versus
-      <code>Drink_From_Cup</code>, or <code>Make_Coffee_Pour_Water</code> versus
-      <code>Make_Coffee</code>. The pipeline predicts the parent class rather than the specific
-      sub-action, scoring zero under exact label matching. Second, brief interactions like
-      <code>Write</code> or <code>Pour_From_Bottle</code> occupy short temporal windows that
-      TAD&rsquo;s sliding-window detector systematically misses or merges into adjacent segments.
-    </p>
-
-    <h4>Zero-Recall Classes</h4>
-    <p>
-      The classes at the very bottom (<code>Pour_From_Kettle</code>,
-      <code>Make_Tea_Insert_Tea_Bag</code>, <code>Make_Tea_Boil_Water</code>,
-      <code>Make_Coffee_Get_Water</code>, <code>Use_Glasses</code>,
-      <code>Stir_Coffee_Tea</code>, <code>Pour_From_Can</code>,
-      <code>Drink_From_Glass</code>) score exactly 0% despite meeting the minimum occurrence
-      threshold. These are exclusively rare, fine-grained sub-actions. Their zero recall is a
-      direct consequence of training distribution bias: ActionFormer was trained on a dataset where
-      these classes appear so infrequently that the model never learned to reliably detect them.
-      The VLM similarly has little basis to override a TAD prediction toward these obscure
-      sub-classes. This is the most concrete finding of the per-class analysis: the pipeline&rsquo;s
-      failure is concentrated in a predictable subset of rare, fine-grained classes, not distributed
-      uniformly across all actions.
+      Recall then collapses for two reasons. First, many low-scoring classes are fine-grained
+      sub-actions (<code>Drink_From_Bottle</code> (18%) versus <code>Drink_From_Cup</code>, or
+      <code>Make_Coffee_Pour_Water</code> versus <code>Make_Coffee</code>) where the pipeline
+      predicts the parent class and scores zero under exact label matching. Second, brief
+      interactions like <code>Write</code> (7%) or <code>Pour_From_Bottle</code> occupy short
+      temporal windows that TAD&rsquo;s sliding-window detector systematically misses or merges into
+      adjacent segments. At the very bottom, rare sub-actions such as <code>Pour_From_Kettle</code>,
+      <code>Make_Tea_Boil_Water</code>, <code>Use_Glasses</code> and <code>Drink_From_Glass</code>
+      score exactly 0%: they appear so infrequently in training that neither ActionFormer nor the VLM
+      has a basis to detect them. The failure is thus concentrated in a predictable subset of rare,
+      fine-grained classes rather than spread uniformly across the ontology.
     </p>
 
     <h3>Robustness to Video Complexity</h3>
@@ -698,48 +840,22 @@
       <img src="images/pipeline_robustness.png" alt="Scatter plot of LCS Recall vs. video complexity with regression line"
            style="width:100%; height:auto; display:block; border-radius:6px;">
       <span class="caption">
-        <strong>Figure 4.</strong> LCS Recall vs. video complexity (total ground-truth actions per
-        video) across 86 videos. The regression line (red) shows a mild negative trend, but the wide
-        confidence band and high scatter indicate complexity is a weak predictor of recall.
+        <strong>Figure 9.</strong> <em>Hybrid pipeline</em> LCS Recall vs. video complexity (total
+        ground-truth actions per video) across 86 videos. The regression line (red) shows a mild
+        negative trend, but the wide confidence band and high scatter indicate complexity is a weak
+        predictor of recall.
       </span>
     </div>
 
     <p>
-      The figure above plots LCS Recall against video complexity, measured as the total number of
-      GT actions per video. The regression line shows a mild negative trend (recall
-      decreases slightly as videos become more complex) but the wide confidence band and high
-      scatter indicate that complexity is a weak predictor of performance at best.
-    </p>
-
-    <h4>What the Trend Tells Us</h4>
-    <p>
-      The negative slope is statistically present but practically modest: a video with 200 GT
-      actions scores roughly 5&ndash;8 percentage points lower than a video with 50 GT actions on
-      average. This suggests the pipeline degrades gracefully with complexity rather than
-      collapsing, which is a positive robustness finding. Long videos do not systematically break the
-      pipeline.
-    </p>
-
-    <h4>What the Scatter Tells Us</h4>
-    <p>
-      The variance at low complexity (videos under 50 GT actions range from 7% to 96% recall) is
-      far larger than the variance explained by the trend line. This means that for short videos,
-      other factors dominate, most likely which specific action classes appear in the video. A
-      short video dominated by high-recall classes like <code>Get_Up</code> and
-      <code>Use_Fridge</code> will score near 90%, while a short video containing mostly
-      fine-grained sub-actions like <code>Write</code> and <code>Pour_From_Bottle</code> will
-      score near 10%, regardless of length.
-    </p>
-
-    <h4>Synthesis</h4>
-    <p>
-      Taken together, the per-class analysis and the robustness plot suggest that the primary axis
-      of failure is <strong>action class identity</strong> rather than video duration. A video&rsquo;s
-      recall score is more predictable from knowing which classes it contains than from knowing how
-      long it is. The Pearson correlation between GT action count and recall is
-      <em>r</em> = &minus;0.28 (<em>p</em> &lt; 0.05), confirming a statistically significant but
-      weak negative relationship. Future work should focus on improving rare-class detection rather
-      than scaling to shorter videos.
+      The Hybrid pipeline shows a mild negative trend with video complexity
+      (Pearson <em>r</em> = &minus;0.28, <em>p</em> &lt; 0.05), but the effect is small:
+      a video with 200 GT actions scores only 5&ndash;8 points lower than one with 50, and
+      the scatter <em>within</em> complexity bins dwarfs the trend. A video's recall is
+      more predictable from <strong>which classes it contains</strong> than from how long
+      it is. A short video dominated by fine-grained sub-actions scores near 10%, while
+      one dominated by visually distinctive classes scores near 90%. Future work should
+      therefore target rare-class detection rather than shorter videos.
     </p>
   </div>
   </div>
@@ -754,17 +870,43 @@
 <section class="chapter wide" id="conclusion">
   <div class="reveal framed">
     <div class="frame-title">
-      <span class="frame-num">05</span>
+      <span class="frame-num">08</span>
       <h2>Conclusion and Limitations</h2>
     </div>
 
-    <p>bla bla</p>
-
-    <h3>Limitations</h3>
-    <ul>
-      <li><strong>Limitation1.</strong> bla bla</li>
-      <li><strong>Limitation2.</strong> bla bla</li>
-    </ul>
+    <p>
+      The TAD baseline is the strongest single component of the pipeline in F1 terms (36.6 vs 36.2 for
+      Hybrid on the 86 video subset). Its strength is recall, since the detector is dense by design and
+      rarely misses a salient action. Its weakness is precision, since the same density floods the
+      timeline with redundant proposals. The Hybrid pipeline addresses the precision weakness at the
+      cost of part of the recall strength, the VLM stage cleans up many false positives (precision plus
+      3.9) but loses fine grained recall (recall minus 20.5), because it does not reliably distinguish
+      look alike sub-actions like Cook_Stir, Cook_Use_Oven and Cook_Use_Stove from their parent
+      super-class Cook. The net F1 outcome is essentially a tie, with the per video distribution showing
+      48 wins for TAD, 35 for Hybrid and 3 ties out of 86, depending on whether the video is dominated
+      by fine grained or by visually generic classes.
+    </p>
+    <p>
+      Taken alone, the VLM baseline reveals a two-sided picture. Its high LCS precision indicates
+      genuine semantic understanding of activity sequences at a coarse level, and long-duration
+      activities are reliably detected, all without any task-specific training. But it is fundamentally
+      constrained by temporal resolution: the 1.7-second sampling interval makes short events
+      structurally undetectable, its localization is imprecise, and the Q&amp;A experiments show it does
+      not exploit frame order at all, relying instead on static appearance and language priors.
+    </p>
+    <p>
+      Two specific limitations of the TAD side stand out and motivate concrete next steps. First, the
+      TAD pipeline still produces a number of over-extended segments that survive the
+      matched prefilter. The Appendix example on P20T16C03 illustrates this, on rows like Cook both
+      TAD and Hybrid hold a single label for several minutes while the ground truth alternates more
+      rapidly, which costs mAP at IoU 0.5 even when the label itself is correct. A natural next step is
+      to refine boundaries through a small auxiliary head or a learned post-processing stage, decoupling
+      segment proposal from boundary regression. Second, the per class analysis localises the residual
+      error budget to a predictable subset of rare and fine grained sub-actions (Insert_Tea_Bag,
+      Drink_From_Glass, Pour_From_Can, Make_Tea_Boil_Water) that the model never had enough signal to
+      learn. A targeted oversampling strategy, or a class balanced loss on these tail categories, is the
+      most direct route to lifting both the LCS and the mAP numbers.
+    </p>
   </div>
 </section>
 
@@ -820,9 +962,315 @@
   </div>
 </section>
 
+<div class="act-break act-break-blue reveal">
+  <div class="act-tag">Appendix</div>
+  <div class="act-break-title">Additional Material</div>
+  <div class="act-break-sub">Extended analyses and qualitative case studies beyond the core results.</div>
+</div>
+
+<section class="chapter wide" id="appendix">
+  <div class="reveal framed">
+    <div class="frame-title">
+      <span class="frame-num orange">A</span>
+      <h2>Additional Material</h2>
+    </div>
+
+    <p>
+      These analyses extend the core results: per-video win/loss case studies for the TAD vs.
+      Hybrid comparison (with source videos), and the finer-grained VLM diagnostics.
+    </p>
+
+    <h3>Where the Overall TAD vs. Hybrid Trade-off Comes From</h3>
+    <p>
+      The overall gap of plus 20.5 recall and minus 3.9 precision between TAD and Hybrid, averaged
+      across the 86 evaluation videos, is not a uniform shift applied to every video. It is the
+      average of two opposite per video regimes that cancel out in F1. The VLM relabelling stage
+      performs one consistent operation in every video it touches, namely it replaces a TAD label with
+      what it judges from a short clip of frames around the segment. The same operation has opposite
+      effects depending on the type of label it is acting on. When the original TAD prediction belongs
+      to a visually distinct category that the VLM can reject from a few frames, the operation removes
+      a false positive and lifts precision. When the original TAD prediction belongs to a family of
+      look alike sub-actions that the VLM cannot reliably tell apart in a short clip, the operation
+      merges the sub-action into its parent and lowers recall. Across the dataset the two effects are
+      roughly balanced, with 48 videos resolving in favour of TAD, 35 in favour of Hybrid, and 3 ties.
+      This is why the overall F1 numbers (36.6 for TAD versus 36.2 for Hybrid) land within one point of
+      each other while the recall and precision columns differ by tens of points. The Hybrid pipeline
+      does not degrade the TAD baseline on average, it redistributes its error budget from precision to
+      recall, and the dataset itself determines on which side any given video lands.
+    </p>
+
+    <h3>Where TAD Wins and Where Hybrid Wins</h3>
+    <p>
+      To make the two regimes concrete, we pick one video from the TAD-win side and one from the
+      Hybrid-win side and look at their full timelines.
+    </p>
+
+    <div class="pipeline-card">
+      <img src="images/07_tad_vs_hybrid_showcase.png" alt="Head-to-head comparison on two showcase videos">
+      <span class="caption">
+        <strong>Figure 10.</strong> Per video head to head on the two showcase examples. Left,
+        P20T16C03 (208 ground truth actions, kitchen routine). TAD F1 42.9 vs Hybrid F1 32.3. Right,
+        P14T02C04 (54 ground truth actions, low activity living room scene). TAD F1 28.4 vs Hybrid F1
+        45.6.
+      </span>
+    </div>
+
+    <h4>P20T16C03: TAD wins on a fine grained kitchen routine</h4>
+
+    <div class="pipeline-card">
+      <img src="images/05_gantt_3row_P20T16C03.png" alt="Per-class timeline for P20T16C03">
+      <span class="caption">
+        <strong>Figure 11.</strong> Per-class timeline for the TAD-win example P20T16C03 (about 19
+        minutes). Each horizontal row is one TSU action class. Within each row, the top sub-bar in blue
+        is the ground truth, the middle sub-bar in red is the TAD baseline, the bottom sub-bar in green
+        is the Hybrid pipeline. On the Cook_Stir and Cook_Use_Oven rows, the red TAD bars track the
+        blue ground truth between minutes 4 and 10, while the green Hybrid bars disappear after minute 8
+        and instead fill the parent Cook row.
+      </span>
+    </div>
+
+    <p>
+      Reading the Gantt row by row, the TAD-win pattern is visible in two specific places. On the
+      Cook_Use_Oven row, blue ground truth fires intermittently between minutes 4 and 10, and the red
+      TAD bars follow the same rhythm in the middle sub-bar. The green Hybrid bars are present only in
+      the first half of that window and disappear after minute 8, because the VLM merged the rest of
+      those intervals into the parent class Cook, where both red and green now span almost the entire
+      timeline even though blue only appears between minutes 3 and 10. The Cook_Stir row shows the same
+      vertical alignment, blue and red follow each other while green is intermittent. The TAD baseline
+      therefore covers three distinct fine grained labels (Cook, Cook_Stir, Cook_Use_Oven) where the
+      Hybrid pipeline reduces them to mainly one (Cook). Several other rows also show all three
+      pipelines hallucinating together (Make_Coffee, Make_Tea and Pour_From_Kettle have heavy red and
+      green bars but no blue bar at all), which means the VLM does not catch every TAD hallucination
+      either. The net effect of the row level comparison is that TAD recovers more fine grained
+      vocabulary across the timeline, which the LCS metric rewards, hence TAD F1 42.9 vs Hybrid F1 32.3
+      on this video.
+    </p>
+    <p>
+      Qualitatively, P20T16C03 is a continuous meal-preparation routine. The person spends a long
+      uninterrupted block of time in the cooking area, alternating quickly between stirring food in a
+      pot, opening the oven to check it, and operating the stove, with brief excursions to fetch
+      ingredients from a drawer or the fridge. From the perspective of the Hybrid pipeline, the VLM is
+      asked to label short eight-frame clips inside this block. In a short clip, Cook_Stir,
+      Cook_Use_Oven and Cook_Use_Stove look almost identical, hands near a hot surface in a kitchen, no
+      large body posture change, very similar background. The VLM defaults to the safer parent category
+      Cook, which is correct as a coarse label but invisible to the LCS metric that scores fine grained
+      classes. The TAD baseline, by contrast, sees the full 19-minute feature sequence at once, so it
+      can use the periodic temporal pattern of stirring intervals to disambiguate the three
+      sub-actions. This is the regime in which the structural backbone has a real advantage and the
+      per-clip VLM cannot match it.
+    </p>
+
+    <div class="pipeline-card">
+      <video controls preload="metadata" poster="images/05_gantt_3row_P20T16C03.png">
+        <source src="videos/P20T16C03.mp4" type="video/mp4">
+      </video>
+      <span class="caption">
+        <strong>Video 1.</strong> TAD win example. Kitchen routine, about 19 minutes. TAD recovers the
+        fine grained cooking vocabulary that the Hybrid VLM collapses into the generic super-class
+        Cook.
+      </span>
+    </div>
+
+    <h4>P14T02C04: Hybrid wins on a low-activity living room scene</h4>
+
+    <div class="pipeline-card">
+      <img src="images/08_gantt_3row_P14T02C04.png" alt="Per-class timeline for P14T02C04">
+      <span class="caption">
+        <strong>Figure 12.</strong> Per-class timeline for the Hybrid-win example P14T02C04 (about 21
+        minutes). Same layout, blue is ground truth, red is TAD, green is Hybrid. Rows such as
+        Watch_TV, Read, Use_Telephone and Use_Tablet contain heavy red bars and no blue bars at all,
+        which means TAD predicted these actions across the whole video even though they never appear in
+        the ground truth. The Hybrid VLM correctly rejects most of these hallucinations and is visually
+        concentrated on the rows that the ground truth actually occupies, namely Use_Laptop, Sit_Down,
+        Get_Up, Lay_Down, Leave and Enter.
+      </span>
+    </div>
+
+    <p>
+      Reading the Gantt row by row, the Hybrid-win pattern is even more visually direct. Four entire
+      rows contain red bars across the whole video and zero blue bars at all, Watch_TV, Read,
+      Use_Telephone and Use_Tablet. These four classes never appear in the ground truth. The Hybrid
+      pipeline removes all of them on three rows (the green sub-bar is completely empty on Read,
+      Use_Telephone and Use_Tablet) and most of them on the fourth (Watch_TV keeps only a small green
+      block near the end). On the rows that the ground truth actually contains (Use_Laptop, Sit_Down,
+      Get_Up, Lay_Down, Leave, Enter), the green sub-bar follows the blue sub-bar more closely than the
+      red sub-bar does, and stays empty where blue is empty. The Hybrid pipeline is therefore closer to
+      the ground truth on this video on both axes, by suppressing four full rows of hallucinations and
+      by tracking the activity better on the rows that matter, hence Hybrid F1 45.6 vs TAD F1 28.4.
+    </p>
+    <p>
+      Qualitatively, P14T02C04 is a low-activity living-room scene. The person spends most of the 21
+      minutes either sitting on a sofa with a laptop or lying down on the same sofa, with a handful of
+      short transitions when they get up, leave the room and come back. There is no kitchen vocabulary,
+      no desk vocabulary, no tableware. From the perspective of the Hybrid pipeline, the VLM has an easy
+      job because the scene is visually unambiguous, eight frames of a person on a sofa with a laptop
+      are enough to confidently reject Watch_TV, Read, Use_Telephone, Use_Tablet and Drink_From_Cup. The
+      TAD baseline, by contrast, operates only on CLIP features and has no scene-level veto. When it
+      sees a person sitting with an object in hand, it falls back to its most frequent training-time
+      classes, which are exactly Drink_From_Cup and Watch_TV, and fires them across the whole video.
+      This is the regime in which the structural backbone systematically over-predicts and the per-clip
+      VLM is the correct semantic filter.
+    </p>
+
+    <div class="pipeline-card">
+      <video controls preload="metadata" poster="images/08_gantt_3row_P14T02C04.png">
+        <source src="videos/P14T02C04.mp4" type="video/mp4">
+      </video>
+      <span class="caption">
+        <strong>Video 2.</strong> Hybrid win example. Low activity living room scene, about 21 minutes.
+        The ground truth uses only six classes. TAD hallucinates frequent training-time classes
+        (Drink_From_Cup, Watch_TV) that the Hybrid VLM correctly rejects.
+      </span>
+    </div>
+
+    <h3>VLM: Substitution Errors</h3>
+    <p>
+      Beyond missed detections, the substitution analysis reveals systematic semantic confusions.
+      For instance, Read is predicted 25 times in place of Watch_TV, and Use_Tablet is predicted 18
+      times in place of Watch_TV, suggesting the model confuses visually similar stationary postures.
+      Walk is the most over-predicted class overall, appearing in 15% of all hallucinations, likely
+      because transitions between activities are common and the model defaults to locomotion as a
+      filler.
+    </p>
+
+    <h3>Extended TAD Diagnostics</h3>
+    <p>
+      The figures and table below support the main-text TAD results: the raw inference distribution,
+      the per-subject breakdown, the recall-vs-complexity scatter, and the full training configuration.
+    </p>
+
+    <div class="pipeline-card">
+      <img src="images/02_tad_predictions_analysis.png" alt="Three-panel analysis of raw TAD inference output">
+      <span class="caption">
+        <strong>Figure 13.</strong> Three views of the raw inference output on the 86 video evaluation
+        subset. Left, score distribution skewed toward low confidence values. Middle, top 30 predicted
+        classes among the 51 in the ontology, dominated by Drink_From_Cup, Put_Something_On_Table and
+        Take_Something_Off_Table. Right, predicted and ground truth segment durations both cluster in
+        the one to ten second range, but predictions outnumber ground truth by roughly twelve to one,
+        which drives the dense over-firing pattern seen in the per video timelines.
+      </span>
+    </div>
+
+    <div class="pipeline-card">
+      <img src="images/04_tad_per_subject.png" alt="TAD LCS Recall, Precision and F1 per test subject">
+      <span class="caption">
+        <strong>Figure 14.</strong> TAD baseline LCS Recall, Precision and F1 per test subject. Bars
+        are sorted by F1. The strongest subject (P14) reaches F1 41.9, the weakest (P11) reaches F1
+        29.9. Recall stays in the 66 to 84 range across all seven subjects and precision stays in the
+        20 to 30 range, which mirrors the global high-recall and low-precision pattern.
+      </span>
+    </div>
+
+    <p>
+      The TAD baseline behaves consistently across subjects: F1 varies by roughly 12 points between the
+      strongest and weakest subject, but the qualitative picture (high recall, low precision) is the
+      same everywhere, and no subject is catastrophically below the others, suggesting the detector
+      generalises across people rather than memorising specific training subjects. The VLM baseline
+      shows the same stability: its LCS F1 is relatively consistent across the 7 test subjects (range
+      28.1%&ndash;35.0%), so its performance is not strongly dependent on individual subjects or their
+      specific activity patterns.
+    </p>
+
+    <div class="pipeline-card">
+      <img src="images/06_tad_recall_vs_complexity.png" alt="TAD LCS Recall vs. video complexity">
+      <span class="caption">
+        <strong>Figure 15.</strong> TAD baseline LCS Recall plotted against video complexity (number of
+        ground truth actions per video) on the 86 video subset. The red regression line is essentially
+        flat (slope -0.004) and the Pearson correlation is <em>r</em> = -0.01, statistically
+        indistinguishable from zero.
+      </span>
+    </div>
+
+    <h3>TAD Training Configuration</h3>
+    <div class="wide-content">
+      <table class="data-table" style="max-width:480px; margin-left:auto; margin-right:auto;">
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Training videos</td><td>315 (10 subjects, P03&ndash;P19)</td></tr>
+          <tr><td>Validation videos</td><td>36 (held-out subject P25)</td></tr>
+          <tr><td>Hardware</td><td>2&times; NVIDIA V100</td></tr>
+          <tr><td>Epochs</td><td>40</td></tr>
+          <tr><td>Optimiser</td><td>AdamW, lr 1e-4, weight decay 0.05</td></tr>
+          <tr><td>Schedule</td><td>3-epoch linear warmup + cosine annealing</td></tr>
+          <tr><td>Regularisation</td><td>gradient clip 1.0, mixed precision, EMA</td></tr>
+          <tr><td>Checkpoint</td><td>best validation loss (~epoch 20)</td></tr>
+        </tbody>
+      </table>
+      <span class="caption"><strong>Table A1.</strong> ActionFormer training configuration on the TSU Cross-Subject split.</span>
+    </div>
+  </div>
+</section>
+
+<section class="chapter wide" id="references">
+  <div class="reveal framed">
+    <div class="frame-title">
+      <span class="frame-num orange">R</span>
+      <h2>References</h2>
+    </div>
+    <ol class="ref-list">
+      <li id="ref1">D. Cores, M. Dorkenwald, M. Mucientes, C. G. M. Snoek, Y. M. Asano.
+        <span class="ref-title">TVBench: Redesigning Video-Language Evaluation.</span>
+        <span class="ref-venue">arXiv:2410.07752, 2024.</span>
+        <a href="https://arxiv.org/abs/2410.07752">arXiv</a></li>
+      <li id="ref2">M. Cai et al.
+        <span class="ref-title">TemporalBench: Benchmarking Fine-grained Temporal Understanding for Multimodal Video Models.</span>
+        <span class="ref-venue">arXiv:2410.10818, 2024.</span>
+        <a href="https://arxiv.org/abs/2410.10818">arXiv</a></li>
+      <li id="ref3">J. Ye, Z. Wang, H. Sun, et al.
+        <span class="ref-title">T*: Re-thinking Temporal Search for Long-Form Video Understanding.</span>
+        <span class="ref-venue">CVPR 2025. arXiv:2504.02259.</span>
+        <a href="https://arxiv.org/abs/2504.02259">arXiv</a></li>
+      <li id="ref4">Z. Pang, et al.
+        <span class="ref-title">MR. Video: &ldquo;MapReduce&rdquo; is the Principle for Long Video Understanding.</span>
+        <span class="ref-venue">NeurIPS 2025. arXiv:2504.16082.</span>
+        <a href="https://arxiv.org/abs/2504.16082">arXiv</a></li>
+      <li id="ref5">A. Sinha, et al.
+        <span class="ref-title">MS-Temba: Multi-Scale Temporal Mamba for Understanding Long Untrimmed Videos.</span>
+        <span class="ref-venue">CVPR 2026. arXiv:2501.06138.</span>
+        <a href="https://arxiv.org/abs/2501.06138">arXiv</a></li>
+      <li id="ref6">C.-L. Zhang, J. Wu, Y. Li.
+        <span class="ref-title">ActionFormer: Localizing Moments of Actions with Transformers.</span>
+        <span class="ref-venue">ECCV 2022. arXiv:2202.07925.</span>
+        <a href="https://arxiv.org/abs/2202.07925">arXiv</a></li>
+      <li id="ref7">S. Liu, et al.
+        <span class="ref-title">OpenTAD: A Unified Framework and Comprehensive Study of Temporal Action Detection.</span>
+        <span class="ref-venue">arXiv:2502.20361, 2025.</span>
+        <a href="https://arxiv.org/abs/2502.20361">arXiv</a></li>
+      <li id="ref8">R. Dai, S. Das, S. Sharma, L. Minciullo, L. Garattoni, F. Bremond, G. Francesca.
+        <span class="ref-title">Toyota Smarthome Untrimmed: Real-World Untrimmed Videos for Activity Detection.</span>
+        <span class="ref-venue">IEEE TPAMI, 2022. arXiv:2010.14982.</span>
+        <a href="https://arxiv.org/abs/2010.14982">arXiv</a></li>
+      <li id="ref9">R. Dai, S. Das, L. Minciullo, L. Garattoni, G. Francesca, F. Bremond.
+        <span class="ref-title">PDAN: Pyramid Dilated Attention Network for Action Detection.</span>
+        <span class="ref-venue">WACV 2021.</span>
+        <a href="https://openaccess.thecvf.com/content/WACV2021/html/Dai_PDAN_Pyramid_Dilated_Attention_Network_for_Action_Detection_WACV_2021_paper.html">paper</a></li>
+      <li id="ref10">Qwen Team, Alibaba.
+        <span class="ref-title">Qwen3-VL Technical Report.</span>
+        <span class="ref-venue">arXiv:2511.21631, 2025.</span>
+        <a href="https://arxiv.org/abs/2511.21631">arXiv</a></li>
+      <li id="ref11">A. Radford, J. W. Kim, C. Hallacy, et al.
+        <span class="ref-title">Learning Transferable Visual Models From Natural Language Supervision (CLIP).</span>
+        <span class="ref-venue">ICML 2021. arXiv:2103.00020.</span>
+        <a href="https://arxiv.org/abs/2103.00020">arXiv</a></li>
+      <li id="ref12">A. Rasekh, E. Bagheri Soula, O. Daliran, S. Gottschalk, M. Fayyaz.
+        <span class="ref-title">Enhancing Temporal Understanding in Video-LLMs through Stacked Temporal Attention in Vision Encoders.</span>
+        <span class="ref-venue">arXiv:2510.26027, 2025.</span>
+        <a href="https://arxiv.org/abs/2510.26027">arXiv</a></li>
+      <li id="ref13">Dahmani et al.
+        <span class="ref-title">Reasoning Resides in Layers: Restoring Temporal Reasoning in Video-Language Models with Layer-Selective Merging (MERIT).</span>
+        <span class="ref-venue">arXiv:2604.11399, 2026.</span>
+        <a href="https://arxiv.org/abs/2604.11399">arXiv</a></li>
+      <li id="ref14">Abouelenin et al.
+        <span class="ref-title">From Segments to Scenes: Temporal Understanding in Autonomous Driving via Vision-Language Models.</span>
+        <span class="ref-venue">arXiv:2512.05277, 2025.</span>
+        <a href="https://arxiv.org/abs/2512.05277">arXiv</a></li>
+    </ol>
+  </div>
+</section>
+
 <footer>
   <em>Structure-Guided VLM Reasoning for Long-Form Activity Videos</em><br><br>
-  EPFL &mdash; CS-503 Visual Intelligence &nbsp;&middot;&nbsp; 2025<br><br>
+  EPFL - CS-503 Visual Intelligence &nbsp;&middot;&nbsp; 2026<br><br>
   </footer>
 
 <script>
@@ -837,7 +1285,7 @@ document.addEventListener('DOMContentLoaded', function () {
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+  }, { threshold: 0, rootMargin: '0px 0px -80px 0px' });
   targets.forEach(function (el) { observer.observe(el); });
 
   // ── Count-up animation ──

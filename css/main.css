@@ -294,6 +294,11 @@ body {
 }
 .pipeline-svg-wrap { overflow-x: auto; }
 .pipeline-svg-wrap svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+.pipeline-card img,
+.pipeline-card video { width: 100%; height: auto; display: block; border-radius: 6px; }
+.pipeline-card iframe { width: 100%; border: 0; display: block; border-radius: 6px; }
+.fig-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 28px 0; }
+@media (max-width: 760px) { .fig-pair { grid-template-columns: 1fr; } }
 
 .eval-stats {
   display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
@@ -430,3 +435,43 @@ footer a:hover { text-decoration: underline; }
   font-size: 13px; color: var(--muted);
   margin-top: 12px;
 }
+
+/* References */
+.ref-list {
+  list-style: none;
+  counter-reset: ref;
+  padding: 0;
+  margin: 8px 0 0;
+}
+.ref-list li {
+  counter-increment: ref;
+  position: relative;
+  padding-left: 42px;
+  margin-bottom: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.ref-list li::before {
+  content: "[" counter(ref) "]";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 14px;
+}
+.ref-list .ref-title { font-style: italic; }
+.ref-list .ref-venue { color: var(--muted); }
+.ref-list a { color: var(--accent); text-decoration: none; }
+.ref-list a:hover { text-decoration: underline; }
+
+/* Inline citation markers */
+.cite, .cite:link, .cite:visited {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+  padding-left: 1px;
+}
+.cite:hover { text-decoration: underline; }
