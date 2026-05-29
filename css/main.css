@@ -215,6 +215,17 @@ body {
 }
 
 .chapter.wide { max-width: var(--wide); }
+
+/* Alternating section backgrounds: full-bleed gray band behind a centered chapter */
+.chapter.alt {
+  background: var(--bg-alt);
+  box-shadow: 0 0 0 100vmax var(--bg-alt);
+  clip-path: inset(0 -100vmax);
+}
+.chapter.alt .frame-title { background: var(--bg-alt); }
+/* On gray sections, give the left-bordered h3 titles a white background for contrast */
+.chapter.alt h3 { background: var(--bg); }
+
 .twocol {
   column-count: 2;
   column-gap: 56px;
