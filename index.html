@@ -41,8 +41,8 @@
     Long-Form Activity Videos via Structure-Guided VLM Reasoning
   </h1>
   <p class="hero-sub">
-    How to bridge the gap between what Vision Language Models <em>see</em> and what they <em>understand</em>
-    about time?
+    A study of why Vision Language Models recognize actions in long videos
+    but struggle to localize them in time, and whether action detection can help.
   </p>
   <div class="hero-authors">
     Rim El Qabli,&nbsp;
@@ -88,8 +88,8 @@
         We evaluate on Toyota Smarthome Untrimmed (TSU), where all prior work is
         TAD-only, making ours the <strong>first VLM baseline on TSU</strong>. VLMs correctly
         identify activity threads but hallucinate temporal structure, motivating the hybrid
-        design. Rather than a clear win, the pipeline <strong>redistributes</strong>
-        performance: it trades the TAD baseline's high recall for higher precision at roughly
+        design. The pipeline <strong>redistributes</strong> performance rather than producing a
+        clear win: it trades the TAD baseline's high recall for higher precision at roughly
         equivalent F1, filtering redundant detections without recovering more ground-truth
         actions. Our analysis localizes <em>why</em>: failure concentrates in rare, fine-grained
         action classes rather than scaling with video length or complexity. The contribution is
@@ -100,13 +100,7 @@
   </div>
 </section>
 
-<div class="act-break act-break-blue reveal">
-  <div class="act-tag">Act I</div>
-  <div class="act-break-title">The Problem</div>
-  <div class="act-break-sub">VLMs see everything but understand nothing about time.</div>
-</div>
-
-<section class="chapter wide" id="intro">
+<section class="chapter wide alt" id="intro">
   <div class="reveal framed">
     <div class="frame-title">
       <span class="frame-num">01</span>
@@ -149,9 +143,8 @@
   </div>
 </section>
 
-<section class="chapter" style="background: var(--bg-alt); max-width: none; padding-left: 0; padding-right: 0;" id="related">
-  <div style="max-width: var(--wide); margin: 0 auto; padding: 0 24px;">
-    <div class="reveal framed on-alt">
+<section class="chapter wide" id="related">
+    <div class="reveal framed">
       <div class="frame-title">
         <span class="frame-num orange">02</span>
         <h2>Related Work</h2>
@@ -186,7 +179,7 @@
           <p>
             Prior TAD-only work on TSU includes PDAN<a class="cite" href="#ref9">[9]</a> (~32.7% frame-mAP) and the current
             state-of-the-art MS-Temba<a class="cite" href="#ref5">[5]</a> (2025), which reports CLIP features outperforming I3D on
-            this benchmark. Crucially, <em>no VLM has been evaluated on TSU</em>. Our work fills this gap, 
+            this benchmark. To our knowledge, <em>no VLM has been evaluated on TSU</em>. Our work fills this gap,
             providing the first VLM baseline on TSU and directly comparing it to TAD-only performance.
           </p>
         </div>
@@ -201,16 +194,9 @@
         </div>
       </div>
     </div>
-  </div>
 </section>
 
-<div class="act-break act-break-orange reveal">
-  <div class="act-tag">Act II</div>
-  <div class="act-break-title">The Approach</div>
-  <div class="act-break-sub">A hybrid pipeline that gives VLMs the temporal scaffolding they lack.</div>
-</div>
-
-<section class="chapter wide" id="method">
+<section class="chapter wide alt" id="method">
   <div class="reveal framed">
     <div class="frame-title">
       <span class="frame-num">03</span>
@@ -290,7 +276,7 @@
         <p>
           Using the CLIP features described above, ActionFormer produces a ranked list of candidate
           segments, each characterised by a start time, end time, predicted action label, and
-          confidence score. The raw output is noisy by design, the detector intentionally
+          confidence score. The raw output is intentionally noisy: the detector
           over-proposes to maximise recall, so two filtering steps are applied before any VLM
           inference:
         </p>
@@ -299,7 +285,7 @@
           discarded. This removes low-quality proposals while retaining borderline detections that
           the VLM may still be able to resolve.</li>
           <li><strong>Per-class Non-Maximum Suppression (IoU > 0.3):</strong> among overlapping proposals
-          of the same class, only the highest-scoring survives. Crucially, NMS is applied per class
+          of the same class, only the highest-scoring survives. NMS is applied per class
           rather than globally, preserving TSU's co-occurring activities. In domestic settings, a
           person can simultaneously <code>Watch_TV</code> and <code>Eat_Snack</code>, so cross-class
           suppression would incorrectly remove valid detections.</li>
@@ -333,12 +319,6 @@
     </p>
   </div>
 </section>
-
-<div class="act-break act-break-blue reveal">
-  <div class="act-tag">Act III</div>
-  <div class="act-break-title">The Evidence</div>
-  <div class="act-break-sub">Does temporal scaffolding actually help?</div>
-</div>
 
 <section class="chapter wide" id="experiments">
   <div class="framed">
@@ -490,7 +470,7 @@
   </div>
 </section>
 
-<section class="chapter wide" id="tad">
+<section class="chapter wide alt" id="tad">
   <div class="reveal framed">
     <div class="frame-title">
       <span class="frame-num orange">05</span>
@@ -519,7 +499,7 @@
       At test time the trained model produces a very dense set of candidate segments. Across the 86
       videos of the evaluation subset, ActionFormer outputs roughly 82,000 raw detections before any
       cleanup, against approximately 6,700 ground truth segments. This 12 to 1 prediction to GT ratio
-      is by design, the detector intentionally over-proposes to maximise recall, but it has two
+      is intentional, since the detector over-proposes to maximise recall, but it has two
       consequences that we control for in the evaluation. First, the score distribution is heavily
       skewed toward low confidence proposals, so a confidence cut-off is necessary. Second,
       ActionFormer fires multiple overlapping segments for the same true action, so per class
@@ -700,7 +680,7 @@
   </div>
 </section>
 
-<section class="chapter wide" id="hybrid">
+<section class="chapter wide alt" id="hybrid">
   <div class="framed">
     <div class="frame-title">
       <span class="frame-num">07</span>
@@ -738,7 +718,7 @@
       passive background states that persist between them. Both TAD and the VLM, by contrast,
       actively identify and label these intermediate states (<code>Watch_TV</code>,
       <code>Sit_Down</code>, <code>Use_Laptop</code>) because they are visually present
-      throughout the video. This asymmetry is structural, not a failure of either system, and it
+      throughout the video. This asymmetry is structural rather than a failure of either system, and it
       is the primary reason why evaluation metrics must be chosen carefully.
     </p>
 
@@ -780,10 +760,10 @@
       Recall but the lowest Precision, meaning it recovers most GT actions through sheer
       prediction volume rather than targeted localisation. The Hybrid pipeline sacrifices recall
       (52.0%) in exchange for higher precision (30.7%), as the VLM filtering removes many of the
-      redundant TAD predictions. Crucially, the LCS F1 scores are nearly identical, confirming
+      redundant TAD predictions. The LCS F1 scores are nearly identical, confirming
       that the harmonic mean correctly normalises for the density difference and reveals the two
       systems to be roughly equivalent in overall sequence recovery quality. The Hybrid pipeline
-      does not degrade performance relative to TAD, it redistributes it.
+      therefore redistributes performance relative to TAD rather than improving or degrading it.
     </p>
 
     <h4>mAP Results</h4>
@@ -816,9 +796,9 @@
       subjects and camera angles, suggesting the pipeline genuinely learned them. A middle tier
       (40&ndash;65%: <code>Watch_TV</code>, <code>Cook</code>, <code>Enter</code>,
       <code>Use_Laptop</code>, <code>Read</code>) is common but visually ambiguous, consisting of
-      background or transitional states that lack precise boundaries. Tellingly, <code>Walk</code>
-      and <code>Put_Something_On_Table</code> land here despite being among the three most frequent
-      classes. Visual distinctiveness matters more than training-signal volume.
+      background or transitional states that lack precise boundaries. <code>Walk</code>
+      and <code>Put_Something_On_Table</code> also land here despite being among the three most frequent
+      classes, which suggests visual distinctiveness matters more than training-signal volume.
     </p>
     <p>
       Recall then collapses for two reasons. First, many low-scoring classes are fine-grained
@@ -861,12 +841,6 @@
   </div>
 </section>
 
-<div class="act-break act-break-orange reveal">
-  <div class="act-tag">Finale</div>
-  <div class="act-break-title">What We Learned</div>
-  <div class="act-break-sub">Takeaways, limitations, and what comes next.</div>
-</div>
-
 <section class="chapter wide" id="conclusion">
   <div class="reveal framed">
     <div class="frame-title">
@@ -876,7 +850,7 @@
 
     <p>
       The TAD baseline is the strongest single component of the pipeline in F1 terms (36.6 vs 36.2 for
-      Hybrid on the 86 video subset). Its strength is recall, since the detector is dense by design and
+      Hybrid on the 86 video subset). Its strength is recall, since the detector is deliberately dense and
       rarely misses a salient action. Its weakness is precision, since the same density floods the
       timeline with redundant proposals. The Hybrid pipeline addresses the precision weakness at the
       cost of part of the recall strength, the VLM stage cleans up many false positives (precision plus
@@ -887,7 +861,7 @@
       by fine grained or by visually generic classes.
     </p>
     <p>
-      Taken alone, the VLM baseline reveals a two-sided picture. Its high LCS precision indicates
+      The VLM baseline, considered on its own, shows a two-sided picture. Its high LCS precision indicates
       genuine semantic understanding of activity sequences at a coarse level, and long-duration
       activities are reliably detected, all without any task-specific training. But it is fundamentally
       constrained by temporal resolution: the 1.7-second sampling interval makes short events
@@ -962,12 +936,6 @@
   </div>
 </section>
 
-<div class="act-break act-break-blue reveal">
-  <div class="act-tag">Appendix</div>
-  <div class="act-break-title">Additional Material</div>
-  <div class="act-break-sub">Extended analyses and qualitative case studies beyond the core results.</div>
-</div>
-
 <section class="chapter wide" id="appendix">
   <div class="reveal framed">
     <div class="frame-title">
@@ -994,8 +962,8 @@
       merges the sub-action into its parent and lowers recall. Across the dataset the two effects are
       roughly balanced, with 48 videos resolving in favour of TAD, 35 in favour of Hybrid, and 3 ties.
       This is why the overall F1 numbers (36.6 for TAD versus 36.2 for Hybrid) land within one point of
-      each other while the recall and precision columns differ by tens of points. The Hybrid pipeline
-      does not degrade the TAD baseline on average, it redistributes its error budget from precision to
+      each other while the recall and precision columns differ by tens of points. On average the Hybrid
+      pipeline does not degrade the TAD baseline; instead it shifts the error budget from precision to
       recall, and the dataset itself determines on which side any given video lands.
     </p>
 
@@ -1046,7 +1014,7 @@
       on this video.
     </p>
     <p>
-      Qualitatively, P20T16C03 is a continuous meal-preparation routine. The person spends a long
+      P20T16C03 is a continuous meal-preparation routine. The person spends a long
       uninterrupted block of time in the cooking area, alternating quickly between stirring food in a
       pot, opening the oven to check it, and operating the stove, with brief excursions to fetch
       ingredients from a drawer or the fridge. From the perspective of the Hybrid pipeline, the VLM is
@@ -1099,7 +1067,7 @@
       by tracking the activity better on the rows that matter, hence Hybrid F1 45.6 vs TAD F1 28.4.
     </p>
     <p>
-      Qualitatively, P14T02C04 is a low-activity living-room scene. The person spends most of the 21
+      P14T02C04 is a low-activity living-room scene. The person spends most of the 21
       minutes either sitting on a sofa with a laptop or lying down on the same sofa, with a handful of
       short transitions when they get up, leave the room and come back. There is no kitchen vocabulary,
       no desk vocabulary, no tableware. From the perspective of the Hybrid pipeline, the VLM has an easy
@@ -1201,7 +1169,7 @@
   </div>
 </section>
 
-<section class="chapter wide" id="references">
+<section class="chapter wide alt" id="references">
   <div class="reveal framed">
     <div class="frame-title">
       <span class="frame-num orange">R</span>
